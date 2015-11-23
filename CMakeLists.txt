@@ -19,7 +19,7 @@ catkin_package(
     DEPENDS Boost
     CATKIN_DEPENDS roscpp sensor_msgs diagnostic_updater dynamic_reconfigure
 #    LIBRARIES 
-#    INCLUDE_DIRS include
+    INCLUDE_DIRS include
     )
 
 include_directories(include ${catkin_INCLUDE_DIRS})
