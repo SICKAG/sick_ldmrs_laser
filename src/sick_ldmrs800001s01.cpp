@@ -46,17 +46,25 @@
 #include <sick_ldmrs/datatypes/Object.hpp>
 #include <sick_ldmrs/datatypes/Scan.hpp>
 
+#include <sick_ldmrs/devices/LD_MRS.hpp>
+
 #include <sick_ldmrs/tools/errorhandler.hpp>
 #include <sick_ldmrs/tools/toolbox.hpp>
 
 
-sick_ldmrs_driver::SickLDMRS::SickLDMRS(Manager *manager)
-  : application::BasicApplication()
+namespace sick_ldmrs_driver
 {
-  // TODO MG
+
+SickLDMRS::SickLDMRS(Manager *manager)
+  : application::BasicApplication()
+  , manager_(manager)
+{
+  dynamic_reconfigure::Server<SickLDMRSDriverConfig>::CallbackType f;
+  f = boost::bind(&SickLDMRS::update_config, this, _1, _2);
+  dynamic_reconfigure_server_.setCallback(f);
 }
 
-void sick_ldmrs_driver::SickLDMRS::setData(BasicData &data)
+void SickLDMRS::setData(BasicData &data)
 {
   //
   // Do something with it.
@@ -73,11 +81,11 @@ void sick_ldmrs_driver::SickLDMRS::setData(BasicData &data)
     {
       // Print the scan start timestamp (NTP time)
       Scan* scan = dynamic_cast<Scan*>(&data);
-      const ScannerInfo* info = scan->getScannerInfoByDeviceId(1);
-
-      if (info != NULL)
+      std::vector<ScannerInfo> scannerInfos = scan->getScannerInfos();
+      std::vector<ScannerInfo>::const_iterator it;
+      for (it = scannerInfos.begin(); it != scannerInfos.end(); ++it)
       {
-        const Time& time = info->getStartTimestamp();
+        const Time& time = it->getStartTimestamp();
         ROS_INFO("LdmrsApp::setData(): Scan start time: %s", time.toString().c_str());
       }
 
@@ -111,6 +119,54 @@ void sick_ldmrs_driver::SickLDMRS::setData(BasicData &data)
 
   ROS_INFO("LdmrsApp::setData(): Called with data of type %s from ID %s", datatypeStr.c_str(), sourceIdStr.c_str());
 }
+
+void SickLDMRS::validate_config(SickLDMRSDriverConfig &conf)
+{
+  if (conf.start_angle <= conf.end_angle)
+  {
+    ROS_WARN("Start angle must be greater than end angle. Adjusting start_angle.");
+    conf.start_angle = conf.end_angle;  // TODO: - 2 * ticks2rad
+  }
+}
+
+void SickLDMRS::update_config(SickLDMRSDriverConfig &new_config, uint32_t level)
+{
+  validate_config(new_config);
+  config_ = new_config;
+
+  std::cout << "start_angle:    " << config_.start_angle << std::endl;
+  std::cout << "end_angle:      " << config_.end_angle << std::endl;
+  std::cout << "frame_id:       " << config_.frame_id << std::endl;
+  std::cout << "scan_frequency: " << config_.scan_frequency << std::endl;
+
+  devices::LDMRS* ldmrs;
+  ldmrs = dynamic_cast<devices::LDMRS*>(manager_->getFirstDeviceByType(Sourcetype_LDMRS));
+  if (ldmrs == NULL)
+  {
+    ROS_WARN("update_config: no connection to LDMRS!");
+    return;
+  }
+
+  // TODO: if (new_config.start_angle < config_.end_angle): first update end angle,
+  // then start angle to ensure that always start_angle > end_angle; see comments
+  // in LuxBase::cmd_setScanAngles().
+  ldmrs->setScanAngles(new_config.start_angle, new_config.end_angle);
+
+  switch (config_.scan_frequency)
+  {
+  case SickLDMRSDriver_ScanFreq1250:
+    ldmrs->setScanFrequency(12.5d);
+  case SickLDMRSDriver_ScanFreq2500:
+    ldmrs->setScanFrequency(25.0d);
+  case SickLDMRSDriver_ScanFreq5000:
+    ldmrs->setScanFrequency(50.0d);
+  default:
+    ROS_ERROR("Unknown scan frequency: %i", config_.scan_frequency);
+  }
+}
+
+} /* namespace sick_ldmrs_driver */
+
 
 int main(int argc, char **argv)
 {
@@ -165,12 +221,8 @@ int main(int argc, char **argv)
     return EXIT_FAILURE;
   }
 
-  // This loop never ends
-  while (1)
-  {
-    // Sleep 100 ms
-    usleep(100000);
-  }
+  ROS_INFO("%s is initialized.", ros::this_node::getName().c_str());
+  ros::spin();
 
   return EXIT_SUCCESS;
 }

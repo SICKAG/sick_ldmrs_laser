@@ -44,6 +44,9 @@
 
 #include <ros/ros.h>
 
+#include <dynamic_reconfigure/server.h>
+#include <sick_ldmrs_driver/SickLDMRSDriverConfig.h>
+
 #include <sick_ldmrs/manager.hpp>
 #include <sick_ldmrs/application/BasicApplication.hpp>
 
@@ -56,6 +59,8 @@ class SickLDMRS : public application::BasicApplication
 public:
   SickLDMRS(Manager* manager);
   virtual ~SickLDMRS() {}
+  void validate_config(SickLDMRSDriverConfig &conf);
+  void update_config(SickLDMRSDriverConfig &new_config, uint32_t level = 0);
 
 protected:
   void setData(BasicData& data);  // Callback for new data from the manager (scans etc.)
@@ -63,6 +68,12 @@ protected:
 private:
   // ROS
   ros::NodeHandle nh_;
+
+  Manager* manager_;
+
+  // Dynamic Reconfigure
+  SickLDMRSDriverConfig config_;
+  dynamic_reconfigure::Server<SickLDMRSDriverConfig> dynamic_reconfigure_server_;
 };
 
 } /* namespace sick_ldmrs_driver */

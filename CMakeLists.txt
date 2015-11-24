@@ -13,7 +13,7 @@ find_package(Boost REQUIRED COMPONENTS system)
 
 find_package(SickLDMRS REQUIRED)
 
-#generate_dynamic_reconfigure_options(cfg/SickLDMRS.cfg)
+generate_dynamic_reconfigure_options(cfg/SickLDMRSDriver.cfg)
 
 catkin_package(
     DEPENDS Boost
