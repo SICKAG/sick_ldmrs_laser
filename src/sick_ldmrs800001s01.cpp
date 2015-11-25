@@ -102,10 +102,9 @@ void SickLDMRS::setData(BasicData &data)
       Scan* scan = dynamic_cast<Scan*>(&data);
       std::vector<ScannerInfo> scannerInfos = scan->getScannerInfos();
       std::vector<ScannerInfo>::const_iterator it;
-      Time time;
       for (it = scannerInfos.begin(); it != scannerInfos.end(); ++it)
       {
-        time = it->getStartTimestamp();
+        const Time& time = it->getStartTimestamp();
         ROS_INFO("LdmrsApp::setData(): Scan start time: %s (%s)",
                  time.toString().c_str(),
                  time.toLongString().c_str());
@@ -113,7 +112,8 @@ void SickLDMRS::setData(BasicData &data)
 
       PointCloud::Ptr cloud = boost::make_shared<PointCloud>();
       cloud->header.frame_id = config_.frame_id;
-      cloud->header.stamp = time.seconds() * 1e6;
+      // not using time stamp from scanner here, because it is delayed by up to 1.5 seconds
+      cloud->header.stamp = (ros::Time::now().toSec() - 1 / expected_frequency_) * 1e6;
 
       cloud->height = 1;
       cloud->width = scan->size();
