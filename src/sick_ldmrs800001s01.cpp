@@ -36,6 +36,8 @@
 
 #include <iostream>
 
+#include <pcl_conversions/pcl_conversions.h>
+
 #include "sick_ldmrs_driver/sick_ldmrs800001s01.hpp"
 
 #include <sick_ldmrs/datatypes/EvalCaseResults.hpp>
@@ -55,13 +57,31 @@
 namespace sick_ldmrs_driver
 {
 
-SickLDMRS::SickLDMRS(Manager *manager)
+SickLDMRS::SickLDMRS(Manager *manager, boost::shared_ptr<diagnostic_updater::Updater> diagnostics)
   : application::BasicApplication()
+  , diagnostics_(diagnostics)
   , manager_(manager)
+  , expected_frequency_(12.5)
 {
   dynamic_reconfigure::Server<SickLDMRSDriverConfig>::CallbackType f;
   f = boost::bind(&SickLDMRS::update_config, this, _1, _2);
   dynamic_reconfigure_server_.setCallback(f);
+
+  // point cloud publisher
+  pub_ = nh_.advertise<sensor_msgs::PointCloud2>("cloud", 100);
+
+  diagnostics_->setHardwareID("none");   // set from device after connection
+  diagnosticPub_ = new diagnostic_updater::DiagnosedPublisher<sensor_msgs::PointCloud2>(pub_, *diagnostics_,
+      // frequency should be target +- 10%
+      diagnostic_updater::FrequencyStatusParam(&expected_frequency_, &expected_frequency_, 0.1, 10),
+      // timestamp delta can be from -1 seconds to 1.3x what it ideally is at the lowest frequency
+      diagnostic_updater::TimeStampStatusParam(-1, 1.3 * 1.0 / 12.5));
+}
+
+SickLDMRS::~SickLDMRS()
+{
+  delete manager_;
+  delete diagnosticPub_;
 }
 
 void SickLDMRS::setData(BasicData &data)
@@ -79,17 +99,33 @@ void SickLDMRS::setData(BasicData &data)
   case Datatype_Scan:
     datatypeStr = "Scan (" + ::toString(((Scan&)data).getNumPoints()) + " points)";
     {
-      // Print the scan start timestamp (NTP time)
       Scan* scan = dynamic_cast<Scan*>(&data);
       std::vector<ScannerInfo> scannerInfos = scan->getScannerInfos();
       std::vector<ScannerInfo>::const_iterator it;
+      Time time;
       for (it = scannerInfos.begin(); it != scannerInfos.end(); ++it)
       {
-        const Time& time = it->getStartTimestamp();
-        ROS_INFO("LdmrsApp::setData(): Scan start time: %s", time.toString().c_str());
+        time = it->getStartTimestamp();
+        ROS_INFO("LdmrsApp::setData(): Scan start time: %s (%s)",
+                 time.toString().c_str(),
+                 time.toLongString().c_str());
       }
 
-      // TODO MG: convert to PointCloud, publish
+      PointCloud::Ptr cloud = boost::make_shared<PointCloud>();
+      cloud->header.frame_id = config_.frame_id;
+      cloud->header.stamp = time.seconds() * 1e6;
+
+      cloud->height = 1;
+      cloud->width = scan->size();
+      for (size_t i = 0; i < scan->size(); ++i)
+      {
+        const ScanPoint& p = (*scan)[i];
+        cloud->points.push_back(pcl::PointXYZ(p.getX(), p.getY(), p.getZ()));
+      }
+
+      sensor_msgs::PointCloud2 msg;
+      pcl::toROSMsg(*cloud, msg);
+      diagnosticPub_->publish(msg);
     }
     break;
   case Datatype_Objects:
@@ -155,14 +191,20 @@ void SickLDMRS::update_config(SickLDMRSDriverConfig &new_config, uint32_t level)
   switch (config_.scan_frequency)
   {
   case SickLDMRSDriver_ScanFreq1250:
-    ldmrs->setScanFrequency(12.5d);
+    expected_frequency_ = 12.5d;
+    break;
   case SickLDMRSDriver_ScanFreq2500:
-    ldmrs->setScanFrequency(25.0d);
+    expected_frequency_ = 25.0d;
+    break;
   case SickLDMRSDriver_ScanFreq5000:
-    ldmrs->setScanFrequency(50.0d);
+    expected_frequency_ = 50.0d;
+    break;
   default:
     ROS_ERROR("Unknown scan frequency: %i", config_.scan_frequency);
+    break;
   }
+
+  ldmrs->setScanFrequency(expected_frequency_);
 }
 
 } /* namespace sick_ldmrs_driver */
@@ -171,6 +213,8 @@ void SickLDMRS::update_config(SickLDMRSDriverConfig &new_config, uint32_t level)
 int main(int argc, char **argv)
 {
   ros::init(argc, argv, "sick_ldmrs800001s01");
+  boost::shared_ptr<diagnostic_updater::Updater> diagnostics
+    = boost::make_shared<diagnostic_updater::Updater>();
 
   // The MRS-App connects to an MRS, reads its configuration and receives all incoming data.
   // First, create the manager object. The manager handles devices, collects
@@ -191,7 +235,7 @@ int main(int argc, char **argv)
   id = 1356;
 
   application::BasicApplication* app;
-  app = new sick_ldmrs_driver::SickLDMRS(&manager);
+  app = new sick_ldmrs_driver::SickLDMRS(&manager, diagnostics);
   app->setApplicationName(name);
 
   result = manager.addApplication(app, id);
@@ -221,8 +265,20 @@ int main(int argc, char **argv)
     return EXIT_FAILURE;
   }
 
+  devices::LDMRS* ldmrs;
+  ldmrs = dynamic_cast<devices::LDMRS*>(manager.getFirstDeviceByType(Sourcetype_LDMRS));
+  std::string serial_number = ldmrs->getSerialNumber();
+  diagnostics->setHardwareID(serial_number);
+
   ROS_INFO("%s is initialized.", ros::this_node::getName().c_str());
-  ros::spin();
+
+  ros::Rate r(10.0);
+  while (ros::ok())
+  {
+    ros::spinOnce();
+    diagnostics->update();
+    r.sleep();
+  }
 
   return EXIT_SUCCESS;
 }

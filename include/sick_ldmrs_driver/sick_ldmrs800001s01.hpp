@@ -43,6 +43,10 @@
 #include <vector>
 
 #include <ros/ros.h>
+#include <sensor_msgs/PointCloud2.h>
+
+#include <diagnostic_updater/diagnostic_updater.h>
+#include <diagnostic_updater/publisher.h>
 
 #include <dynamic_reconfigure/server.h>
 #include <sick_ldmrs_driver/SickLDMRSDriverConfig.h>
@@ -54,26 +58,37 @@
 namespace sick_ldmrs_driver
 {
 
+typedef pcl::PointCloud<pcl::PointXYZ> PointCloud;
+
 class SickLDMRS : public application::BasicApplication
 {
 public:
-  SickLDMRS(Manager* manager);
-  virtual ~SickLDMRS() {}
+  SickLDMRS(Manager* manager, boost::shared_ptr<diagnostic_updater::Updater> diagnostics);
+  virtual ~SickLDMRS();
   void validate_config(SickLDMRSDriverConfig &conf);
   void update_config(SickLDMRSDriverConfig &new_config, uint32_t level = 0);
 
 protected:
+  boost::shared_ptr<diagnostic_updater::Updater> diagnostics_;
   void setData(BasicData& data);  // Callback for new data from the manager (scans etc.)
 
 private:
   // ROS
   ros::NodeHandle nh_;
+  ros::Publisher pub_;
 
-  Manager* manager_;
+  // Diagnostics
+  diagnostic_updater::DiagnosedPublisher<sensor_msgs::PointCloud2>* diagnosticPub_;
 
   // Dynamic Reconfigure
   SickLDMRSDriverConfig config_;
   dynamic_reconfigure::Server<SickLDMRSDriverConfig> dynamic_reconfigure_server_;
+
+  // sick_ldmrs library objects
+  Manager* manager_;
+
+  // Expected scan frequency. Must be a member variable for access by diagnostics.
+  double expected_frequency_;
 };
 
 } /* namespace sick_ldmrs_driver */
