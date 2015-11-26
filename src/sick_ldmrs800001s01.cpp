@@ -143,6 +143,8 @@ void SickLDMRS::setData(BasicData &data)
     break;
   case Datatype_Msg:
     datatypeStr = "Msg (" + ((Msg&)data).toString() + ")";
+    diagnostics_->broadcast(diagnostic_msgs::DiagnosticStatus::WARN, ((Msg&)data).toString());
+    diagnostics_->force_update();
     break;
   case Datatype_MeasurementList:
     datatypeStr = "MeasurementList (" + ::toString(((MeasurementList&)data).m_list.size()) + " entries)";
