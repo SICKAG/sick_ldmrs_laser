@@ -80,7 +80,6 @@ SickLDMRS::SickLDMRS(Manager *manager, boost::shared_ptr<diagnostic_updater::Upd
 
 SickLDMRS::~SickLDMRS()
 {
-  delete manager_;
   delete diagnosticPub_;
 }
 
@@ -236,11 +235,10 @@ int main(int argc, char **argv)
   name = "Sick LDMRS ROS Driver App";
   id = 1356;
 
-  application::BasicApplication* app;
-  app = new sick_ldmrs_driver::SickLDMRS(&manager, diagnostics);
-  app->setApplicationName(name);
+  sick_ldmrs_driver::SickLDMRS app(&manager, diagnostics);
+  app.setApplicationName(name);
 
-  result = manager.addApplication(app, id);
+  result = manager.addApplication(&app, id);
   if (result == false)
   {
     ROS_ERROR("Failed to add application %s, aborting!", name.c_str());
