@@ -255,18 +255,16 @@ int main(int argc, char **argv)
   // m_weWantFieldData:         false
   // m_weWantScanDataFromSopas: false
   ROS_INFO("Adding the LDMRS device.");
-  type = Sourcetype_LDMRS;
+  devices::LDMRS* ldmrs = new devices::LDMRS(&manager);
   name = "LDMRS-1";
   id = 1;
-  result = manager.addAndRunDevice(type, name, id);
+  result = manager.addAndRunDevice(ldmrs, name, id);
   if (result == false)
   {
     ROS_ERROR("Failed to add device %s, aborting!", name.c_str());
     return EXIT_FAILURE;
   }
 
-  devices::LDMRS* ldmrs;
-  ldmrs = dynamic_cast<devices::LDMRS*>(manager.getFirstDeviceByType(Sourcetype_LDMRS));
   std::string serial_number = ldmrs->getSerialNumber();
   diagnostics->setHardwareID(serial_number);
 
