@@ -45,13 +45,16 @@
 #include <sick_ldmrs/datatypes/Fields.hpp>
 #include <sick_ldmrs/datatypes/Measurement.hpp>
 #include <sick_ldmrs/datatypes/Msg.hpp>
-#include <sick_ldmrs/datatypes/Object.hpp>
 #include <sick_ldmrs/datatypes/Scan.hpp>
 
 #include <sick_ldmrs/devices/LD_MRS.hpp>
 
 #include <sick_ldmrs/tools/errorhandler.hpp>
 #include <sick_ldmrs/tools/toolbox.hpp>
+
+#include <visualization_msgs/MarkerArray.h>
+#include <visualization_msgs/Marker.h>
+#include <tf/transform_datatypes.h>
 
 
 namespace sick_ldmrs_driver
@@ -69,6 +72,8 @@ SickLDMRS::SickLDMRS(Manager *manager, boost::shared_ptr<diagnostic_updater::Upd
 
   // point cloud publisher
   pub_ = nh_.advertise<sensor_msgs::PointCloud2>("cloud", 100);
+
+  marker_pub_ = nh_.advertise<visualization_msgs::MarkerArray>("object_markers", 1);
 
   diagnostics_->setHardwareID("none");   // set from device after connection
   diagnosticPub_ = new diagnostic_updater::DiagnosedPublisher<sensor_msgs::PointCloud2>(pub_, *diagnostics_,
@@ -129,6 +134,7 @@ void SickLDMRS::setData(BasicData &data)
     break;
   case Datatype_Objects:
     datatypeStr = "Objects (" + ::toString(((ObjectList&)data).size()) + " objects)";
+    pubObjectMarkers((ObjectList&)data);
     break;
   case Datatype_Fields:
     datatypeStr = "Fields (" + ::toString(((Fields&)data).getFields().size()) + " fields, " +
@@ -165,6 +171,51 @@ void SickLDMRS::validate_config(SickLDMRSDriverConfig &conf)
     conf.start_angle = conf.end_angle;  // TODO: - 2 * ticks2rad
   }
 }
+
+void SickLDMRS::pubObjectMarkers(datatypes::ObjectList &objects)
+{
+  static size_t numMarkers = 0;
+  numMarkers = std::max(numMarkers, objects.size());
+  visualization_msgs::MarkerArray ma;
+  ma.markers.resize(numMarkers);
+  int i = 0;
+  for (; i < objects.size(); i++)
+  {
+    ma.markers[i].header.frame_id = "/ldmrs";
+    ma.markers[i].header.stamp = ros::Time::now();
+    ma.markers[i].ns = "basic_shapes";
+    ma.markers[i].id = i;
+    ma.markers[i].type = visualization_msgs::Marker::CUBE;
+    ma.markers[i].action = visualization_msgs::Marker::ADD;
+    ma.markers[i].color.a = 0.75;
+    ma.markers[i].color.r = 1.0;
+    ma.markers[i].lifetime = ros::Duration(); // TODO
+
+    datatypes::Box2D box = objects[i].getBox();
+
+    datatypes::Point2D p = objects[i].getObjectBoxSigma();
+    ma.markers[i].pose.position.x = p.getX();
+    ma.markers[i].pose.position.y = p.getY();
+    ma.markers[i].pose.orientation = tf::createQuaternionMsgFromYaw(objects[i].getCourseAngle());
+
+    datatypes::Point2D s = objects[i].getObjectBox();
+    ma.markers[i].scale.x = s.getX();
+    ma.markers[i].scale.y = s.getY();
+    ma.markers[i].scale.z = 0.2;
+
+    //std::cout << objects[i].toString() << std::endl;
+  }
+
+  for (; i < numMarkers; i++)
+  {
+    ma.markers[i].id = i;
+    ma.markers[i].action = visualization_msgs::Marker::DELETE;
+  }
+  numMarkers = objects.size();
+
+  marker_pub_.publish(ma);
+};
+
 
 void SickLDMRS::update_config(SickLDMRSDriverConfig &new_config, uint32_t level)
 {
@@ -256,6 +307,7 @@ int main(int argc, char **argv)
   // m_weWantScanDataFromSopas: false
   ROS_INFO("Adding the LDMRS device.");
   devices::LDMRS* ldmrs = new devices::LDMRS(&manager);
+  ldmrs->setWeWantObjectData(true);
   name = "LDMRS-1";
   id = 1;
   result = manager.addAndRunDevice(ldmrs, name, id);

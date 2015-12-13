@@ -53,6 +53,7 @@
 
 #include <sick_ldmrs/manager.hpp>
 #include <sick_ldmrs/application/BasicApplication.hpp>
+#include <sick_ldmrs/datatypes/Object.hpp>
 
 
 namespace sick_ldmrs_driver
@@ -67,6 +68,7 @@ public:
   virtual ~SickLDMRS();
   void validate_config(SickLDMRSDriverConfig &conf);
   void update_config(SickLDMRSDriverConfig &new_config, uint32_t level = 0);
+  void pubObjectMarkers(datatypes::ObjectList &objects);
 
 protected:
   boost::shared_ptr<diagnostic_updater::Updater> diagnostics_;
@@ -76,7 +78,7 @@ private:
   // ROS
   ros::NodeHandle nh_;
   ros::Publisher pub_;
-
+  ros::Publisher marker_pub_;
   // Diagnostics
   diagnostic_updater::DiagnosedPublisher<sensor_msgs::PointCloud2>* diagnosticPub_;
 
