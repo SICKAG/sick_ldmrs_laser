@@ -30,6 +30,7 @@ add_executable(sick_ldmrs800001s01
 target_link_libraries(sick_ldmrs800001s01
     ${catkin_LIBRARIES}
     ${SICK_LDMRS_LIBRARIES})
+add_dependencies(sick_ldmrs800001s01 ${PROJECT_NAME}_gencfg)
 
 install(TARGETS sick_ldmrs800001s01
     RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION})
