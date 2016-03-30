@@ -1,0 +1,26 @@
+<?xml version="1.0"?>
+<package>
+  <name>sick_ldmrs_laser</name>
+  <version>0.0.0</version>
+  <description>
+    A ROS driver for the SICK LD-MRS series of laser scanners.
+    Currently, the package supports the 8-layer LD-MRS800001S01 scanner.
+  </description>
+
+  <maintainer email="martin.guenther@dfki.de">Martin Günther</maintainer>
+  <author email="martin.guenther@dfki.de">Martin Günther</author>
+  <author email="ros@jochen.sprickerhof.de">Jochen Sprickerhof</author>
+
+  <license>BSD</license>
+
+  <url type="website">http://wiki.ros.org/sick_ldmrs_laser</url>
+  <url type="repository">https://github.com/uos/sick_ldmrs_laser</url>
+
+  <buildtool_depend>catkin</buildtool_depend>
+
+  <run_depend>sick_ldmrs_driver</run_depend>
+
+  <export>
+    <metapackage/>
+  </export>
+</package>
