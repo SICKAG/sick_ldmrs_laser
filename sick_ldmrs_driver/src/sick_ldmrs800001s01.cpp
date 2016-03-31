@@ -257,6 +257,7 @@ void SickLDMRS::update_config(SickLDMRSDriverConfig &new_config, uint32_t level)
   }
 
   ldmrs->setScanFrequency(expected_frequency_);
+  ldmrs->setSyncAngleOffset(config_.sync_angle_offset);
 }
 
 } /* namespace sick_ldmrs_driver */
