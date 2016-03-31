@@ -259,6 +259,8 @@ void SickLDMRS::update_config(SickLDMRSDriverConfig &new_config, uint32_t level)
   ldmrs->setScanFrequency(expected_frequency_);
   ldmrs->setSyncAngleOffset(config_.sync_angle_offset);
   ldmrs->setParameter(devices::ParaContourPointDensity, config_.contour_point_density);
+  ldmrs->setParameter(devices::ParaMinimumObjectAge, config_.min_object_age);
+  ldmrs->setParameter(devices::ParaMaximumPredictionAge, config_.max_prediction_age);
 }
 
 } /* namespace sick_ldmrs_driver */
