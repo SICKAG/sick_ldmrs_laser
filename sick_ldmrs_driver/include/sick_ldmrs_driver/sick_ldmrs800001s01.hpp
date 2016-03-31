@@ -68,7 +68,7 @@ public:
   virtual ~SickLDMRS();
   void validate_config(SickLDMRSDriverConfig &conf);
   void update_config(SickLDMRSDriverConfig &new_config, uint32_t level = 0);
-  void pubObjectMarkers(datatypes::ObjectList &objects);
+  void pubObjects(datatypes::ObjectList &objects);
 
 protected:
   boost::shared_ptr<diagnostic_updater::Updater> diagnostics_;
@@ -78,7 +78,7 @@ private:
   // ROS
   ros::NodeHandle nh_;
   ros::Publisher pub_;
-  ros::Publisher marker_pub_;
+  ros::Publisher object_pub_;
   // Diagnostics
   diagnostic_updater::DiagnosedPublisher<sensor_msgs::PointCloud2>* diagnosticPub_;
 

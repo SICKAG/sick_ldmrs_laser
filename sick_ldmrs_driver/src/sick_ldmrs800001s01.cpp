@@ -52,8 +52,7 @@
 #include <sick_ldmrs/tools/errorhandler.hpp>
 #include <sick_ldmrs/tools/toolbox.hpp>
 
-#include <visualization_msgs/MarkerArray.h>
-#include <visualization_msgs/Marker.h>
+#include <sick_ldmrs_msgs/ObjectArray.h>
 #include <tf/transform_datatypes.h>
 
 
@@ -73,7 +72,7 @@ SickLDMRS::SickLDMRS(Manager *manager, boost::shared_ptr<diagnostic_updater::Upd
   // point cloud publisher
   pub_ = nh_.advertise<sensor_msgs::PointCloud2>("cloud", 100);
 
-  marker_pub_ = nh_.advertise<visualization_msgs::MarkerArray>("object_markers", 1);
+  object_pub_ = nh_.advertise<sick_ldmrs_msgs::ObjectArray>("objects", 1);
 
   diagnostics_->setHardwareID("none");   // set from device after connection
   diagnosticPub_ = new diagnostic_updater::DiagnosedPublisher<sensor_msgs::PointCloud2>(pub_, *diagnostics_,
@@ -134,7 +133,7 @@ void SickLDMRS::setData(BasicData &data)
     break;
   case Datatype_Objects:
     datatypeStr = "Objects (" + ::toString(((ObjectList&)data).size()) + " objects)";
-    pubObjectMarkers((ObjectList&)data);
+    pubObjects((ObjectList&)data);
     break;
   case Datatype_Fields:
     datatypeStr = "Fields (" + ::toString(((Fields&)data).getFields().size()) + " fields, " +
@@ -179,49 +178,53 @@ void SickLDMRS::validate_config(SickLDMRSDriverConfig &conf)
   }
 }
 
-void SickLDMRS::pubObjectMarkers(datatypes::ObjectList &objects)
+void SickLDMRS::pubObjects(datatypes::ObjectList &objects)
 {
-  static size_t numMarkers = 0;
-  numMarkers = std::max(numMarkers, objects.size());
-  visualization_msgs::MarkerArray ma;
-  ma.markers.resize(numMarkers);
-  int i = 0;
-  for (; i < objects.size(); i++)
+  sick_ldmrs_msgs::ObjectArray oa;
+  oa.header.frame_id = config_.frame_id;
+  // not using time stamp from scanner here, because it is delayed by up to 1.5 seconds
+  oa.header.stamp = ros::Time::now();
+  oa.objects.resize(objects.size());
+
+  for (int i = 0; i < objects.size(); i++)
   {
-    ma.markers[i].header.frame_id = "/ldmrs";
-    ma.markers[i].header.stamp = ros::Time::now();
-    ma.markers[i].ns = "basic_shapes";
-    ma.markers[i].id = i;
-    ma.markers[i].type = visualization_msgs::Marker::CUBE;
-    ma.markers[i].action = visualization_msgs::Marker::ADD;
-    ma.markers[i].color.a = 0.75;
-    ma.markers[i].color.r = 1.0;
-    ma.markers[i].lifetime = ros::Duration(); // TODO
+    oa.objects[i].id = objects[i].getObjectId();
+    oa.objects[i].tracking_time = ros::Time::now() - ros::Duration(objects[i].getObjectAge() / expected_frequency_);
+    oa.objects[i].last_seen = ros::Time::now() - ros::Duration(objects[i].getHiddenStatusAge() / expected_frequency_);
+    oa.objects[i].velocity.twist.linear.x = objects[i].getAbsoluteVelocity().getX();
+    oa.objects[i].velocity.twist.linear.y = objects[i].getAbsoluteVelocity().getY();
+    oa.objects[i].velocity.twist.linear.x = objects[i].getAbsoluteVelocity().getX();
+    oa.objects[i].velocity.twist.linear.y = objects[i].getAbsoluteVelocity().getY();
+    oa.objects[i].velocity.covariance[0] = objects[i].getAbsoluteVelocitySigma().getX();
+    oa.objects[i].velocity.covariance[7] = objects[i].getAbsoluteVelocitySigma().getX();
 
-    datatypes::Box2D box = objects[i].getBox();
+    oa.objects[i].bounding_box_center.position.x = objects[i].getBoundingBoxCenter().getX();
+    oa.objects[i].bounding_box_center.position.y = objects[i].getBoundingBoxCenter().getY();
+    oa.objects[i].bounding_box_size.x = objects[i].getBoundingBox().getX();
+    oa.objects[i].bounding_box_size.y = objects[i].getBoundingBox().getY();
 
-    datatypes::Point2D p = objects[i].getObjectBoxSigma();
-    ma.markers[i].pose.position.x = p.getX();
-    ma.markers[i].pose.position.y = p.getY();
-    ma.markers[i].pose.orientation = tf::createQuaternionMsgFromYaw(objects[i].getCourseAngle());
+    oa.objects[i].object_box_center.pose.position.x = objects[i].getCenterPoint().getX();
+    oa.objects[i].object_box_center.pose.position.y = objects[i].getCenterPoint().getY();
+    oa.objects[i].object_box_center.pose.orientation = tf::createQuaternionMsgFromYaw(objects[i].getCourseAngle());
+    oa.objects[i].object_box_center.covariance[0] = objects[i].getCenterPointSigma().getX();
+    oa.objects[i].object_box_center.covariance[7] = objects[i].getCenterPointSigma().getY();
+    oa.objects[i].object_box_center.covariance[35] = objects[i].getCourseAngleSigma();
+    oa.objects[i].object_box_size.x = objects[i].getObjectBox().getX();
+    oa.objects[i].object_box_size.y = objects[i].getObjectBox().getY();
 
-    datatypes::Point2D s = objects[i].getObjectBox();
-    ma.markers[i].scale.x = s.getX();
-    ma.markers[i].scale.y = s.getY();
-    ma.markers[i].scale.z = 0.2;
+    datatypes::Polygon2D contour = objects[i].getContourPoints();
+    oa.objects[i].contour_points.resize(contour.size());
+    for (int j = 0; j < contour.size(); j++)
+    {
+      oa.objects[i].contour_points[j].x = contour[j].getX();
+      oa.objects[i].contour_points[j].y = contour[j].getY();
+    }
 
     //std::cout << objects[i].toString() << std::endl;
   }
 
-  for (; i < numMarkers; i++)
-  {
-    ma.markers[i].id = i;
-    ma.markers[i].action = visualization_msgs::Marker::DELETE;
-  }
-  numMarkers = objects.size();
-
-  marker_pub_.publish(ma);
-};
+  object_pub_.publish(oa);
+}
 
 
 void SickLDMRS::update_config(SickLDMRSDriverConfig &new_config, uint32_t level)

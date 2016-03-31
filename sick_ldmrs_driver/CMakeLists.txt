@@ -8,7 +8,8 @@ find_package(catkin REQUIRED
       diagnostic_updater
       dynamic_reconfigure
       driver_base
-      pcl_conversions)
+      pcl_conversions
+      sick_ldmrs_msgs)
 
 find_package(Boost REQUIRED COMPONENTS system)
 
@@ -18,7 +19,7 @@ generate_dynamic_reconfigure_options(cfg/SickLDMRSDriver.cfg)
 
 catkin_package(
     DEPENDS Boost
-    CATKIN_DEPENDS roscpp sensor_msgs diagnostic_updater dynamic_reconfigure pcl_conversions
+    CATKIN_DEPENDS roscpp sensor_msgs diagnostic_updater dynamic_reconfigure pcl_conversions sick_ldmrs_msgs
 #    LIBRARIES 
     INCLUDE_DIRS include
     )
