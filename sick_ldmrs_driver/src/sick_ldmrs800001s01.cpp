@@ -170,6 +170,13 @@ void SickLDMRS::validate_config(SickLDMRSDriverConfig &conf)
     ROS_WARN("Start angle must be greater than end angle. Adjusting start_angle.");
     conf.start_angle = conf.end_angle;  // TODO: - 2 * ticks2rad
   }
+
+  if (conf.angular_resolution_type != SickLDMRSDriver_ConstantRes
+      && conf.scan_frequency != SickLDMRSDriver_ScanFreq1250)
+  {
+    ROS_WARN("Focused/flexible resolution only available at 12.5 Hz scan frequency. Adjusting scan frequency.");
+    conf.scan_frequency = SickLDMRSDriver_ScanFreq1250;
+  }
 }
 
 void SickLDMRS::pubObjectMarkers(datatypes::ObjectList &objects)
@@ -261,6 +268,7 @@ void SickLDMRS::update_config(SickLDMRSDriverConfig &new_config, uint32_t level)
   ldmrs->setParameter(devices::ParaContourPointDensity, config_.contour_point_density);
   ldmrs->setParameter(devices::ParaMinimumObjectAge, config_.min_object_age);
   ldmrs->setParameter(devices::ParaMaximumPredictionAge, config_.max_prediction_age);
+  ldmrs->setParameter(devices::ParaAngularResolutionType, config_.angular_resolution_type);
 }
 
 } /* namespace sick_ldmrs_driver */
