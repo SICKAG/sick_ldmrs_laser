@@ -269,6 +269,7 @@ void SickLDMRS::update_config(SickLDMRSDriverConfig &new_config, uint32_t level)
   ldmrs->setParameter(devices::ParaMinimumObjectAge, config_.min_object_age);
   ldmrs->setParameter(devices::ParaMaximumPredictionAge, config_.max_prediction_age);
   ldmrs->setParameter(devices::ParaAngularResolutionType, config_.angular_resolution_type);
+  ldmrs->setParameter(devices::ParaRangeReduction, config_.layer_range_reduction);
 }
 
 } /* namespace sick_ldmrs_driver */
