@@ -300,7 +300,8 @@ void SickLDMRS::update_config(SickLDMRSDriverConfig &new_config, uint32_t level)
   // TODO: if (new_config.start_angle < config_.end_angle): first update end angle,
   // then start angle to ensure that always start_angle > end_angle; see comments
   // in LuxBase::cmd_setScanAngles().
-  ldmrs->setScanAngles(new_config.start_angle, new_config.end_angle);
+  if (!ldmrs->setScanAngles(new_config.start_angle, new_config.end_angle))
+    ROS_WARN("Sending param not successful: ");
 
   switch (config_.scan_frequency)
   {
@@ -318,15 +319,24 @@ void SickLDMRS::update_config(SickLDMRSDriverConfig &new_config, uint32_t level)
     break;
   }
 
-  ldmrs->setScanFrequency(expected_frequency_);
-  ldmrs->setSyncAngleOffset(config_.sync_angle_offset);
-  ldmrs->setParameter(devices::ParaContourPointDensity, config_.contour_point_density);
-  ldmrs->setParameter(devices::ParaMinimumObjectAge, config_.min_object_age);
-  ldmrs->setParameter(devices::ParaMaximumPredictionAge, config_.max_prediction_age);
-  ldmrs->setParameter(devices::ParaAngularResolutionType, config_.angular_resolution_type);
-  ldmrs->setParameter(devices::ParaRangeReduction, config_.layer_range_reduction);
-  ldmrs->setParameter(devices::ParaIgnoreNearRange, config_.ignore_near_range ? 1 : 0);
-  ldmrs->setParameter(devices::ParaSensitivityControl, config_.sensitivity_control ? 1 : 0);
+  if (!ldmrs->setScanFrequency(expected_frequency_))
+    ROS_WARN("Sending param not successful: ScanFrequency");
+  if (!ldmrs->setSyncAngleOffset(config_.sync_angle_offset))
+    ROS_WARN("Sending param not successful: SyncAngleOffset");
+  if (!ldmrs->setParameter(devices::ParaContourPointDensity, config_.contour_point_density))
+    ROS_WARN("Sending param not successful: ContourPointDensity");
+  if (!ldmrs->setParameter(devices::ParaMinimumObjectAge, config_.min_object_age))
+    ROS_WARN("Sending param not successful: MinimumObjectAge");
+  if (!ldmrs->setParameter(devices::ParaMaximumPredictionAge, config_.max_prediction_age))
+    ROS_WARN("Sending param not successful: MaximumPredictionAge");
+  if (!ldmrs->setParameter(devices::ParaAngularResolutionType, config_.angular_resolution_type))
+    ROS_WARN("Sending param not successful: AngularResolutionType");
+  if (!ldmrs->setParameter(devices::ParaRangeReduction, config_.layer_range_reduction))
+    ROS_WARN("Sending param not successful: RangeReduction");
+  if (!ldmrs->setParameter(devices::ParaIgnoreNearRange, config_.ignore_near_range ? 1 : 0))
+    ROS_WARN("Sending param not successful: IgnoreNearRange");
+  if (!ldmrs->setParameter(devices::ParaSensitivityControl, config_.sensitivity_control ? 1 : 0))
+    ROS_WARN("Sending param not successful: SensitivityControl");
 
   if (config_.angular_resolution_type == SickLDMRSDriver_FlexRes)
   {
