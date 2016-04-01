@@ -280,6 +280,7 @@ void SickLDMRS::update_config(SickLDMRSDriverConfig &new_config, uint32_t level)
   ldmrs->setParameter(devices::ParaAngularResolutionType, config_.angular_resolution_type);
   ldmrs->setParameter(devices::ParaRangeReduction, config_.layer_range_reduction);
   ldmrs->setParameter(devices::ParaIgnoreNearRange, config_.ignore_near_range ? 1 : 0);
+  ldmrs->setParameter(devices::ParaSensitivityControl, config_.sensitivity_control ? 1 : 0);
 }
 
 } /* namespace sick_ldmrs_driver */
