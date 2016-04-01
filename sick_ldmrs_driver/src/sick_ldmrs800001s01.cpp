@@ -182,6 +182,52 @@ void SickLDMRS::validate_config(SickLDMRSDriverConfig &conf)
     ROS_WARN("If ignore_near_range is set, layer_range_reduction must be set to 'Lower 4 layers reduced range'. Adjusting layer_range_reduction.");
     conf.layer_range_reduction = SickLDMRSDriver_RangeLowerReduced;
   }
+
+  validate_flexres_resolution(conf.flexres_resolution1);
+  validate_flexres_resolution(conf.flexres_resolution2);
+  validate_flexres_resolution(conf.flexres_resolution3);
+  validate_flexres_resolution(conf.flexres_resolution4);
+  validate_flexres_resolution(conf.flexres_resolution5);
+  validate_flexres_resolution(conf.flexres_resolution6);
+  validate_flexres_resolution(conf.flexres_resolution7);
+  validate_flexres_resolution(conf.flexres_resolution8);
+  validate_flexres_start_angle(conf.flexres_start_angle1, conf.flexres_start_angle2);
+  validate_flexres_start_angle(conf.flexres_start_angle2, conf.flexres_start_angle3);
+  validate_flexres_start_angle(conf.flexres_start_angle3, conf.flexres_start_angle4);
+  validate_flexres_start_angle(conf.flexres_start_angle4, conf.flexres_start_angle5);
+  validate_flexres_start_angle(conf.flexres_start_angle5, conf.flexres_start_angle6);
+  validate_flexres_start_angle(conf.flexres_start_angle6, conf.flexres_start_angle7);
+  validate_flexres_start_angle(conf.flexres_start_angle7, conf.flexres_start_angle8);
+}
+
+void SickLDMRS::validate_flexres_resolution(int &res)
+{
+  // Check that res is one of 4/8/16/32. This has to be checked manually here, since
+  // the dynamic parameter is an int with min 4 and max 32, so dynamic reconfigure
+  // doesn't prevent the user from setting an invalid value inside that range.
+  // (Values outside that range will still be clamped automatically.)
+
+  switch (res)
+  {
+  case SickLDMRSDriver_Res0125:
+  case SickLDMRSDriver_Res0250:
+  case SickLDMRSDriver_Res0500:
+  case SickLDMRSDriver_Res1000:
+    break;
+  default:
+    ROS_WARN("Invalid flexres resolution %d! Setting to 32 (= 1 degree).", res);
+    res = SickLDMRSDriver_Res1000;
+    break;
+  }
+}
+
+void SickLDMRS::validate_flexres_start_angle(double &angle1, double &angle2)
+{
+  // make sure the angles are monotonically decreasing
+  if (angle2 > angle1)
+  {
+    angle2 = angle1;
+  }
 }
 
 void SickLDMRS::pubObjects(datatypes::ObjectList &objects)
@@ -281,6 +327,102 @@ void SickLDMRS::update_config(SickLDMRSDriverConfig &new_config, uint32_t level)
   ldmrs->setParameter(devices::ParaRangeReduction, config_.layer_range_reduction);
   ldmrs->setParameter(devices::ParaIgnoreNearRange, config_.ignore_near_range ? 1 : 0);
   ldmrs->setParameter(devices::ParaSensitivityControl, config_.sensitivity_control ? 1 : 0);
+
+  if (config_.angular_resolution_type == SickLDMRSDriver_FlexRes)
+  {
+    std::vector<std::pair<int, int> > res_map, res_map_filtered;
+    res_map.push_back(std::pair<int, int>(config_.flexres_start_angle1 * rad2deg * 32.0, config_.flexres_resolution1));
+    res_map.push_back(std::pair<int, int>(config_.flexres_start_angle2 * rad2deg * 32.0, config_.flexres_resolution2));
+    res_map.push_back(std::pair<int, int>(config_.flexres_start_angle3 * rad2deg * 32.0, config_.flexres_resolution3));
+    res_map.push_back(std::pair<int, int>(config_.flexres_start_angle4 * rad2deg * 32.0, config_.flexres_resolution4));
+    res_map.push_back(std::pair<int, int>(config_.flexres_start_angle5 * rad2deg * 32.0, config_.flexres_resolution5));
+    res_map.push_back(std::pair<int, int>(config_.flexres_start_angle6 * rad2deg * 32.0, config_.flexres_resolution6));
+    res_map.push_back(std::pair<int, int>(config_.flexres_start_angle7 * rad2deg * 32.0, config_.flexres_resolution7));
+    res_map.push_back(std::pair<int, int>(config_.flexres_start_angle8 * rad2deg * 32.0, config_.flexres_resolution8));
+
+    // --- skip zero-length sectors
+    for (int i = 0; i < res_map.size() - 1; ++i)
+    {
+      if (res_map[i].first > res_map[i + 1].first)
+      {
+        res_map_filtered.push_back(res_map[i]);
+      }
+    }
+    if (res_map[7].first > (-1918))   // -1918 = minimum start angle
+    {
+      res_map_filtered.push_back(res_map[7]);
+    }
+
+    // --- ensure constraints are met
+    int shots_per_scan = 0;
+    double sum_res0125 = 0;
+    for (int i = 0; i < res_map_filtered.size() - 1; ++i)
+    {
+      // sector angle in degrees
+      double sector_angle = (res_map_filtered[i].first - res_map_filtered[i + 1].first) / 32.0;
+
+      shots_per_scan += sector_angle * 32.0 / res_map_filtered[i].second;
+      if (res_map_filtered[i].second == SickLDMRSDriver_Res0125)
+      {
+        sum_res0125 += sector_angle;
+      }
+    }
+
+    if (shots_per_scan > 440)
+    {
+      ROS_WARN("FlexRes: The number of shots per scan must be at most 440. Not updating FlexRes config!");
+      return;
+    }
+    if (sum_res0125 > 20.0)
+    {
+      ROS_WARN("FlexRes: The sectors with a resolution of 0.125 deg must not sum up to more than 20 deg. Not updating FlexRes config!");
+      return;
+    }
+
+    // --- send FlexRes params to scanner
+    bool success = true;
+    success &= ldmrs->setParameter(devices::ParaNumSectors, res_map_filtered.size());
+    for (int i = 0; i < res_map_filtered.size(); ++i)
+    {
+      // set sector start angle
+      success &= ldmrs->setParameter((devices::MrsParameterId)(0x4001 + i), res_map_filtered[i].first);
+
+      // set sector resolution
+      success &= ldmrs->setParameter((devices::MrsParameterId)(0x4009 + i), res_map_filtered[i].second);
+    }
+
+    // --- read FlexRes error code
+    if (!success)
+    {
+      UINT32 code;
+      ldmrs->getParameter(devices::ParaDetailedError, &code);
+      std::string msg = flexres_err_to_string(code);
+      ROS_ERROR("FlexRes detailed error: %s", msg.c_str());
+    }
+  }
+}
+
+std::string SickLDMRS::flexres_err_to_string(const UINT32 code) const
+{
+  switch (code)
+  {
+  case devices::ErrFlexResNumShotsInvalid:
+    return "The number of shots per scan is higher than 440.";
+  case devices::ErrFlexResSizeOneEighthSectorInvalid:
+    return "The sectors with a resolution of 0.125 deg sum up to more than 20 deg.";
+  case devices::ErrFlexResFreqInvalid:
+    return "The scan frequency is not 12.5Hz.";
+  case devices::ErrFlexResSectorsOverlapping:
+    return "The start angles of the sectors decrease not strictly monotone.";
+  case devices::ErrFlexResScannerNotIdle:
+    return "Could not set FlexRes parameter because the sensor is not idle and in flex res mode.";
+  case devices::ErrFlexResResolutionInvalid:
+    return "The resolution of one sector is not 4, 8, 16 or 32 (0.125 deg, 0.25 deg, 0.5 deg, 1 deg).";
+  case devices::ErrFlexResNumSectorsInvalid:
+    return "The number of sectors is larger than 8.";
+  default:
+    return "UNKNOWN ERROR CODE";
+  }
 }
 
 } /* namespace sick_ldmrs_driver */
