@@ -176,6 +176,12 @@ void SickLDMRS::validate_config(SickLDMRSDriverConfig &conf)
     ROS_WARN("Focused/flexible resolution only available at 12.5 Hz scan frequency. Adjusting scan frequency.");
     conf.scan_frequency = SickLDMRSDriver_ScanFreq1250;
   }
+
+  if (conf.ignore_near_range && conf.layer_range_reduction != SickLDMRSDriver_RangeLowerReduced)
+  {
+    ROS_WARN("If ignore_near_range is set, layer_range_reduction must be set to 'Lower 4 layers reduced range'. Adjusting layer_range_reduction.");
+    conf.layer_range_reduction = SickLDMRSDriver_RangeLowerReduced;
+  }
 }
 
 void SickLDMRS::pubObjects(datatypes::ObjectList &objects)
@@ -273,6 +279,7 @@ void SickLDMRS::update_config(SickLDMRSDriverConfig &new_config, uint32_t level)
   ldmrs->setParameter(devices::ParaMaximumPredictionAge, config_.max_prediction_age);
   ldmrs->setParameter(devices::ParaAngularResolutionType, config_.angular_resolution_type);
   ldmrs->setParameter(devices::ParaRangeReduction, config_.layer_range_reduction);
+  ldmrs->setParameter(devices::ParaIgnoreNearRange, config_.ignore_near_range ? 1 : 0);
 }
 
 } /* namespace sick_ldmrs_driver */
