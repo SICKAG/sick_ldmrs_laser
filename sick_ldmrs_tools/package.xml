@@ -19,10 +19,12 @@
   <build_depend>roscpp</build_depend>
   <build_depend>visualization_msgs</build_depend>
   <build_depend>sick_ldmrs_msgs</build_depend>
+  <build_depend>libpcl-all-dev</build_depend>
 
   <run_depend>roscpp</run_depend>
   <run_depend>visualization_msgs</run_depend>
   <run_depend>sick_ldmrs_msgs</run_depend>
+  <run_depend>libpcl-all-dev</run_depend>
 
 
 </package>
