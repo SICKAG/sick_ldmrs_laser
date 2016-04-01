@@ -18,7 +18,10 @@
 
   <buildtool_depend>catkin</buildtool_depend>
 
+  <run_depend>sick_ldmrs_description</run_depend>
   <run_depend>sick_ldmrs_driver</run_depend>
+  <run_depend>sick_ldmrs_msgs</run_depend>
+  <run_depend>sick_ldmrs_tools</run_depend>
 
   <export>
     <metapackage/>
