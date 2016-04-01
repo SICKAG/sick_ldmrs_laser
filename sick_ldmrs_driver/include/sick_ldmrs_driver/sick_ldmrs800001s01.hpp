@@ -82,6 +82,7 @@ private:
   ros::NodeHandle nh_;
   ros::Publisher pub_;
   ros::Publisher object_pub_;
+  ros::Publisher cloud_full_pub_;
   // Diagnostics
   diagnostic_updater::DiagnosedPublisher<sensor_msgs::PointCloud2>* diagnosticPub_;
 

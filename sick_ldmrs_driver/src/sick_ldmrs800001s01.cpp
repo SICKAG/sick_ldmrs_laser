@@ -53,6 +53,8 @@
 #include <sick_ldmrs/tools/toolbox.hpp>
 
 #include <sick_ldmrs_msgs/ObjectArray.h>
+#include <sick_ldmrs_msgs/sick_ldmrs_point_type.h>
+#include <pcl/point_cloud.h>
 #include <tf/transform_datatypes.h>
 
 
@@ -73,6 +75,8 @@ SickLDMRS::SickLDMRS(Manager *manager, boost::shared_ptr<diagnostic_updater::Upd
   pub_ = nh_.advertise<sensor_msgs::PointCloud2>("cloud", 100);
 
   object_pub_ = nh_.advertise<sick_ldmrs_msgs::ObjectArray>("objects", 1);
+
+  cloud_full_pub_ = nh_.advertise<sensor_msgs::PointCloud2>("cloud_full", 1);
 
   diagnostics_->setHardwareID("none");   // set from device after connection
   diagnosticPub_ = new diagnostic_updater::DiagnosedPublisher<sensor_msgs::PointCloud2>(pub_, *diagnostics_,
@@ -129,6 +133,33 @@ void SickLDMRS::setData(BasicData &data)
       sensor_msgs::PointCloud2 msg;
       pcl::toROSMsg(*cloud, msg);
       diagnosticPub_->publish(msg);
+
+      pcl::PointCloud<sick_ldmrs_msgs::SICK_LDMRS_Point>::Ptr cloud_full(new pcl::PointCloud<sick_ldmrs_msgs::SICK_LDMRS_Point>);
+
+      cloud_full->header.frame_id = config_.frame_id;
+      // not using time stamp from scanner here, because it is delayed by up to 1.5 seconds
+      cloud_full->header.stamp = ros::Time::now().toSec();
+
+      cloud_full->height = 1;
+      cloud_full->width = scan->size();
+      for (size_t i = 0; i < scan->size(); ++i)
+      {
+        const ScanPoint& p = (*scan)[i];
+        sick_ldmrs_msgs::SICK_LDMRS_Point np;
+        np.x = p.getX();
+        np.y = p.getY();
+        np.z = p.getZ();
+        np.echowidth = p.getEchoWidth();
+        np.layer = p.getLayer();
+        np.echo = p.getEchoNum();
+        np.flags = p.getFlags();
+        cloud_full->points.push_back(np);
+      }
+
+      sensor_msgs::PointCloud2 cloud_msg;
+      pcl::toROSMsg(*cloud_full, cloud_msg);
+      cloud_full_pub_.publish(cloud_msg);
+
     }
     break;
   case Datatype_Objects:
