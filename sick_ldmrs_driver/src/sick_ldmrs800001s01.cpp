@@ -315,6 +315,8 @@ void SickLDMRS::update_config(SickLDMRSDriverConfig &new_config, uint32_t level)
   if (!initialized_)
     return;
 
+  ROS_INFO("Updating config...");
+
   devices::LDMRS* ldmrs;
   ldmrs = dynamic_cast<devices::LDMRS*>(manager_->getFirstDeviceByType(Sourcetype_LDMRS));
   if (ldmrs == NULL)
@@ -441,6 +443,8 @@ void SickLDMRS::update_config(SickLDMRSDriverConfig &new_config, uint32_t level)
   // set angular resolution type *after* FlexRes config!
   if (!ldmrs->setParameter(devices::ParaAngularResolutionType, config_.angular_resolution_type))
     ROS_WARN("Sending param not successful: AngularResolutionType");
+
+  ROS_INFO("... done updating config.");
 }
 
 std::string SickLDMRS::flexres_err_to_string(const UINT32 code) const
