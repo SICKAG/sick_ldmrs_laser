@@ -64,6 +64,7 @@ SickLDMRS::SickLDMRS(Manager *manager, boost::shared_ptr<diagnostic_updater::Upd
   , diagnostics_(diagnostics)
   , manager_(manager)
   , expected_frequency_(12.5)
+  , initialized_(false)
 {
   dynamic_reconfigure::Server<SickLDMRSDriverConfig>::CallbackType f;
   f = boost::bind(&SickLDMRS::update_config, this, _1, _2);
@@ -85,6 +86,12 @@ SickLDMRS::SickLDMRS(Manager *manager, boost::shared_ptr<diagnostic_updater::Upd
 SickLDMRS::~SickLDMRS()
 {
   delete diagnosticPub_;
+}
+
+void SickLDMRS::init()
+{
+  initialized_ = true;
+  update_config(config_);
 }
 
 void SickLDMRS::setData(BasicData &data)
@@ -291,6 +298,9 @@ void SickLDMRS::update_config(SickLDMRSDriverConfig &new_config, uint32_t level)
 {
   validate_config(new_config);
   config_ = new_config;
+
+  if (!initialized_)
+    return;
 
   std::cout << "start_angle:    " << config_.start_angle << std::endl;
   std::cout << "end_angle:      " << config_.end_angle << std::endl;
@@ -503,6 +513,9 @@ int main(int argc, char **argv)
 
   std::string serial_number = ldmrs->getSerialNumber();
   diagnostics->setHardwareID(serial_number);
+
+  // we need to initialize the app after setting up the ldmrs device
+  app.init();
 
   ROS_INFO("%s is initialized.", ros::this_node::getName().c_str());
 
