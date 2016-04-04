@@ -453,13 +453,15 @@ std::string SickLDMRS::flexres_err_to_string(const UINT32 code) const
   case devices::ErrFlexResSectorsOverlapping:
     return "The start angles of the sectors decrease not strictly monotone.";
   case devices::ErrFlexResScannerNotIdle:
-    return "Could not set FlexRes parameter because the sensor is not idle and in flex res mode.";
+    return "Could not set FlexRes parameter because the sensor is in flex res mode and not idle.";
   case devices::ErrFlexResResolutionInvalid:
     return "The resolution of one sector is not 4, 8, 16 or 32 (0.125 deg, 0.25 deg, 0.5 deg, 1 deg).";
   case devices::ErrFlexResNumSectorsInvalid:
     return "The number of sectors is larger than 8.";
   default:
-    return "UNKNOWN ERROR CODE";
+    std::ostringstream ss;
+    ss << "UNKNOWN ERROR CODE (" << code << ")";
+    return ss.str();
   }
 }
 
