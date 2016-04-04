@@ -363,8 +363,6 @@ void SickLDMRS::update_config(SickLDMRSDriverConfig &new_config, uint32_t level)
     ROS_WARN("Sending param not successful: MinimumObjectAge");
   if (!ldmrs->setParameter(devices::ParaMaximumPredictionAge, config_.max_prediction_age))
     ROS_WARN("Sending param not successful: MaximumPredictionAge");
-  if (!ldmrs->setParameter(devices::ParaAngularResolutionType, config_.angular_resolution_type))
-    ROS_WARN("Sending param not successful: AngularResolutionType");
   if (!ldmrs->setParameter(devices::ParaRangeReduction, config_.layer_range_reduction))
     ROS_WARN("Sending param not successful: RangeReduction");
   if (!ldmrs->setParameter(devices::ParaIgnoreNearRange, config_.ignore_near_range ? 1 : 0))
@@ -438,6 +436,10 @@ void SickLDMRS::update_config(SickLDMRSDriverConfig &new_config, uint32_t level)
         printFlexResError();
     }
   }
+
+  // set angular resolution type *after* FlexRes config!
+  if (!ldmrs->setParameter(devices::ParaAngularResolutionType, config_.angular_resolution_type))
+    ROS_WARN("Sending param not successful: AngularResolutionType");
 }
 
 std::string SickLDMRS::flexres_err_to_string(const UINT32 code) const
