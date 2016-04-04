@@ -294,6 +294,22 @@ void SickLDMRS::pubObjects(datatypes::ObjectList &objects)
 }
 
 
+void SickLDMRS::printFlexResError()
+{
+  devices::LDMRS* ldmrs;
+  ldmrs = dynamic_cast<devices::LDMRS*>(manager_->getFirstDeviceByType(Sourcetype_LDMRS));
+  if (ldmrs == NULL)
+  {
+    ROS_WARN("printFlexResError: no connection to LDMRS!");
+    return;
+  }
+
+  UINT32 code;
+  ldmrs->getParameter(devices::ParaDetailedError, &code);
+  std::string msg = flexres_err_to_string(code);
+  ROS_ERROR("FlexRes detailed error: %s", msg.c_str());
+}
+
 void SickLDMRS::update_config(SickLDMRSDriverConfig &new_config, uint32_t level)
 {
   validate_config(new_config);
@@ -408,24 +424,18 @@ void SickLDMRS::update_config(SickLDMRSDriverConfig &new_config, uint32_t level)
     }
 
     // --- send FlexRes params to scanner
-    bool success = true;
-    success &= ldmrs->setParameter(devices::ParaNumSectors, res_map_filtered.size());
+    if (!ldmrs->setParameter(devices::ParaNumSectors, res_map_filtered.size()))
+      printFlexResError();
+
     for (int i = 0; i < res_map_filtered.size(); ++i)
     {
       // set sector start angle
-      success &= ldmrs->setParameter((devices::MrsParameterId)(0x4001 + i), res_map_filtered[i].first);
+      if (!ldmrs->setParameter((devices::MrsParameterId)(0x4001 + i), res_map_filtered[i].first))
+        printFlexResError();
 
       // set sector resolution
-      success &= ldmrs->setParameter((devices::MrsParameterId)(0x4009 + i), res_map_filtered[i].second);
-    }
-
-    // --- read FlexRes error code
-    if (!success)
-    {
-      UINT32 code;
-      ldmrs->getParameter(devices::ParaDetailedError, &code);
-      std::string msg = flexres_err_to_string(code);
-      ROS_ERROR("FlexRes detailed error: %s", msg.c_str());
+      if (!ldmrs->setParameter((devices::MrsParameterId)(0x4009 + i), res_map_filtered[i].second))
+        printFlexResError();
     }
   }
 }

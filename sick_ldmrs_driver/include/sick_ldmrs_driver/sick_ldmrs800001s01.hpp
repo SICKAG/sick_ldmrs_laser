@@ -77,6 +77,7 @@ protected:
   void setData(BasicData& data);  // Callback for new data from the manager (scans etc.)
   void validate_flexres_resolution(int &res);
   void validate_flexres_start_angle(double &angle1, double &angle2);
+  void printFlexResError();
   std::string flexres_err_to_string(const UINT32 code) const;
 
 private:
