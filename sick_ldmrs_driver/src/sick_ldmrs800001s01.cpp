@@ -113,9 +113,9 @@ void SickLDMRS::setData(BasicData &data)
       }
 
       const Time& time = scannerInfos[0].getStartTimestamp();
-      ROS_INFO("LdmrsApp::setData(): Scan start time: %s (%s)",
-               time.toString().c_str(),
-               time.toLongString().c_str());
+      ROS_DEBUG("setData(): Scan start time: %s (%s)",
+                time.toString().c_str(),
+                time.toLongString().c_str());
 
       PointCloud::Ptr cloud = boost::make_shared<PointCloud>();
       cloud->header.frame_id = config_.frame_id;
@@ -171,7 +171,7 @@ void SickLDMRS::setData(BasicData &data)
 
   sourceIdStr = ::toString(data.getSourceId());
 
-  ROS_INFO("LdmrsApp::setData(): Called with data of type %s from ID %s", datatypeStr.c_str(), sourceIdStr.c_str());
+  ROS_DEBUG("setData(): Called with data of type %s from ID %s", datatypeStr.c_str(), sourceIdStr.c_str());
 }
 
 void SickLDMRS::validate_config(SickLDMRSDriverConfig &conf)
@@ -314,11 +314,6 @@ void SickLDMRS::update_config(SickLDMRSDriverConfig &new_config, uint32_t level)
 
   if (!initialized_)
     return;
-
-  std::cout << "start_angle:    " << config_.start_angle << std::endl;
-  std::cout << "end_angle:      " << config_.end_angle << std::endl;
-  std::cout << "frame_id:       " << config_.frame_id << std::endl;
-  std::cout << "scan_frequency: " << config_.scan_frequency << std::endl;
 
   devices::LDMRS* ldmrs;
   ldmrs = dynamic_cast<devices::LDMRS*>(manager_->getFirstDeviceByType(Sourcetype_LDMRS));
