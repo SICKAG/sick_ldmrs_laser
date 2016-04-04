@@ -517,6 +517,10 @@ int main(int argc, char **argv)
   ROS_INFO("Adding the LDMRS device.");
   devices::LDMRS* ldmrs = new devices::LDMRS(&manager);
   ldmrs->setWeWantObjectData(true);
+  std::string hostname;
+  ros::NodeHandle nh;
+  nh.param<std::string>("hostname", hostname, "192.168.0.1");
+  ldmrs->setIpAddress(hostname);
   name = "LDMRS-1";
   id = 1;
   result = manager.addAndRunDevice(ldmrs, name, id);
