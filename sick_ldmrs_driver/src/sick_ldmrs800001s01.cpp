@@ -421,6 +421,15 @@ void SickLDMRS::update_config(SickLDMRSDriverConfig &new_config, uint32_t level)
       return;
     }
 
+    // --- switch to constant resolution
+    // when applying FlexRes params, the angular resolution type has to be set
+    // to something other than FlexRes
+    if (!ldmrs->setParameter(devices::ParaAngularResolutionType, SickLDMRSDriver_ConstantRes))
+      ROS_WARN("Sending param not successful: AngularResolutionType");
+
+    // sleep 10 seconds so that new config is applied by the scanner
+    usleep(10e6);
+
     // --- send FlexRes params to scanner
     if (!ldmrs->setParameter(devices::ParaNumSectors, res_map_filtered.size()))
       printFlexResError();
