@@ -128,7 +128,7 @@ void SickLDMRS::setData(BasicData &data)
         np.y = p.getY();
         np.z = p.getZ();
         np.echowidth = p.getEchoWidth();
-        np.layer = p.getLayer();
+        np.layer = p.getLayer() + (scannerInfos[0].isRearMirrorSide() ? 4 : 0);
         np.echo = p.getEchoNum();
         np.flags = p.getFlags();
         cloud->points.push_back(np);
