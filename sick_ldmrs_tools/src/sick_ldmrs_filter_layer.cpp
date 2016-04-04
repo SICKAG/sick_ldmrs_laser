@@ -45,21 +45,21 @@ ros::Publisher pub;
 void callback(const sensor_msgs::PointCloud2::ConstPtr& pc)
 {
 
-  pcl::PointCloud<sick_ldmrs_msgs::SICK_LDMRS_Point>::Ptr cloud_full(new pcl::PointCloud<sick_ldmrs_msgs::SICK_LDMRS_Point>);
-  pcl::fromROSMsg(*pc, *cloud_full);
+  pcl::PointCloud<sick_ldmrs_msgs::SICK_LDMRS_Point>::Ptr cloud(new pcl::PointCloud<sick_ldmrs_msgs::SICK_LDMRS_Point>);
+  pcl::fromROSMsg(*pc, *cloud);
 
-  pcl::PointCloud<pcl::PointXYZ>::Ptr cloud(new pcl::PointCloud<pcl::PointXYZ>);
+  pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_filtered(new pcl::PointCloud<pcl::PointXYZ>);
 
-  for (size_t i = 0; i < cloud_full->size(); i++)
+  for (size_t i = 0; i < cloud->size(); i++)
   {
-    if (cloud_full->points[i].layer == 1)
+    if (cloud->points[i].layer == 1)
     {
-      cloud->points.push_back(pcl::PointXYZ(cloud_full->points[i].x, cloud_full->points[i].y, cloud_full->points[i].z));
+      cloud_filtered->points.push_back(pcl::PointXYZ(cloud->points[i].x, cloud->points[i].y, cloud->points[i].z));
     }
   }
 
   sensor_msgs::PointCloud2 msg;
-  pcl::toROSMsg(*cloud, msg);
+  pcl::toROSMsg(*cloud_filtered, msg);
   msg.header = pc->header;
   pub.publish(msg);
 
@@ -70,7 +70,7 @@ int main(int argc, char **argv)
   ros::init(argc, argv, "sick_ldmrs_filter_layer");
   ros::NodeHandle nh;
 
-  ros::Subscriber sub = nh.subscribe("cloud_full", 1, callback);
+  ros::Subscriber sub = nh.subscribe("cloud", 1, callback);
   pub = nh.advertise<sensor_msgs::PointCloud2>("cloud_filtered", 1);
 
   ros::spin();
