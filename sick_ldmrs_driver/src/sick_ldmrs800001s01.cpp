@@ -96,11 +96,6 @@ void SickLDMRS::init()
 
 void SickLDMRS::setData(BasicData &data)
 {
-  //
-  // Do something with it.
-  //
-  // Here, we just print what we've got.
-  //
   std::string datatypeStr;
   std::string sourceIdStr;
 
@@ -111,14 +106,16 @@ void SickLDMRS::setData(BasicData &data)
     {
       Scan* scan = dynamic_cast<Scan*>(&data);
       std::vector<ScannerInfo> scannerInfos = scan->getScannerInfos();
-      std::vector<ScannerInfo>::const_iterator it;
-      for (it = scannerInfos.begin(); it != scannerInfos.end(); ++it)
+      if (scannerInfos.size() != 1)
       {
-        const Time& time = it->getStartTimestamp();
-        ROS_INFO("LdmrsApp::setData(): Scan start time: %s (%s)",
-                 time.toString().c_str(),
-                 time.toLongString().c_str());
+        ROS_ERROR("Expected exactly 1 scannerInfo, got %zu!", scannerInfos.size());
+        return;
       }
+
+      const Time& time = scannerInfos[0].getStartTimestamp();
+      ROS_INFO("LdmrsApp::setData(): Scan start time: %s (%s)",
+               time.toString().c_str(),
+               time.toLongString().c_str());
 
       PointCloud::Ptr cloud = boost::make_shared<PointCloud>();
       cloud->header.frame_id = config_.frame_id;
