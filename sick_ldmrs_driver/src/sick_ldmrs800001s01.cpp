@@ -349,14 +349,14 @@ void SickLDMRS::update_config(SickLDMRSDriverConfig &new_config, uint32_t level)
   if (config_.angular_resolution_type == SickLDMRSDriver_FlexRes)
   {
     std::vector<std::pair<int, int> > res_map, res_map_filtered;
-    res_map.push_back(std::pair<int, int>(config_.flexres_start_angle1 * rad2deg * 32.0, config_.flexres_resolution1));
-    res_map.push_back(std::pair<int, int>(config_.flexres_start_angle2 * rad2deg * 32.0, config_.flexres_resolution2));
-    res_map.push_back(std::pair<int, int>(config_.flexres_start_angle3 * rad2deg * 32.0, config_.flexres_resolution3));
-    res_map.push_back(std::pair<int, int>(config_.flexres_start_angle4 * rad2deg * 32.0, config_.flexres_resolution4));
-    res_map.push_back(std::pair<int, int>(config_.flexres_start_angle5 * rad2deg * 32.0, config_.flexres_resolution5));
-    res_map.push_back(std::pair<int, int>(config_.flexres_start_angle6 * rad2deg * 32.0, config_.flexres_resolution6));
-    res_map.push_back(std::pair<int, int>(config_.flexres_start_angle7 * rad2deg * 32.0, config_.flexres_resolution7));
-    res_map.push_back(std::pair<int, int>(config_.flexres_start_angle8 * rad2deg * 32.0, config_.flexres_resolution8));
+    res_map.push_back(std::pair<int, int>(round(config_.flexres_start_angle1 * rad2deg * 32.0), config_.flexres_resolution1));
+    res_map.push_back(std::pair<int, int>(round(config_.flexres_start_angle2 * rad2deg * 32.0), config_.flexres_resolution2));
+    res_map.push_back(std::pair<int, int>(round(config_.flexres_start_angle3 * rad2deg * 32.0), config_.flexres_resolution3));
+    res_map.push_back(std::pair<int, int>(round(config_.flexres_start_angle4 * rad2deg * 32.0), config_.flexres_resolution4));
+    res_map.push_back(std::pair<int, int>(round(config_.flexres_start_angle5 * rad2deg * 32.0), config_.flexres_resolution5));
+    res_map.push_back(std::pair<int, int>(round(config_.flexres_start_angle6 * rad2deg * 32.0), config_.flexres_resolution6));
+    res_map.push_back(std::pair<int, int>(round(config_.flexres_start_angle7 * rad2deg * 32.0), config_.flexres_resolution7));
+    res_map.push_back(std::pair<int, int>(round(config_.flexres_start_angle8 * rad2deg * 32.0), config_.flexres_resolution8));
 
     // --- skip zero-length sectors
     for (int i = 0; i < res_map.size() - 1; ++i)
