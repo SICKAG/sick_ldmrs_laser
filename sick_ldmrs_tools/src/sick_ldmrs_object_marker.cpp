@@ -353,6 +353,15 @@ void callback(const sick_ldmrs_msgs::ObjectArray::ConstPtr& oa)
 
     bounding_box.markers[i].pose = oa->objects[i].bounding_box_center;
     bounding_box.markers[i].scale = oa->objects[i].bounding_box_size;
+
+    if (bounding_box.markers[i].scale.x == 0.0)
+    {
+      bounding_box.markers[i].scale.x = 0.01;
+    }
+    if (bounding_box.markers[i].scale.y == 0.0)
+    {
+      bounding_box.markers[i].scale.y = 0.01;
+    }
     bounding_box.markers[i].scale.z = 0.2;
   }
 
@@ -376,6 +385,15 @@ void callback(const sick_ldmrs_msgs::ObjectArray::ConstPtr& oa)
 
     object_boxes.markers[i].pose = oa->objects[i].object_box_center.pose;
     object_boxes.markers[i].scale = oa->objects[i].object_box_size;
+
+    if (object_boxes.markers[i].scale.x == 0.0)
+    {
+      object_boxes.markers[i].scale.x = 0.01;
+    }
+    if (object_boxes.markers[i].scale.y == 0.0)
+    {
+      object_boxes.markers[i].scale.y = 0.01;
+    }
     object_boxes.markers[i].scale.z = 0.2;
   }
 
