@@ -26,14 +26,14 @@ catkin_package(
 
 include_directories(include ${catkin_INCLUDE_DIRS})
 
-add_executable(sick_ldmrs800001s01
-    src/sick_ldmrs800001s01.cpp)
-target_link_libraries(sick_ldmrs800001s01
+add_executable(sick_ldmrs_node
+    src/sick_ldmrs_node.cpp)
+target_link_libraries(sick_ldmrs_node
     ${catkin_LIBRARIES}
     ${SICK_LDMRS_LIBRARIES})
-add_dependencies(sick_ldmrs800001s01 ${PROJECT_NAME}_gencfg)
+add_dependencies(sick_ldmrs_node ${PROJECT_NAME}_gencfg)
 
-install(TARGETS sick_ldmrs800001s01
+install(TARGETS sick_ldmrs_node
     RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION})
 install(DIRECTORY config DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION})
 install(DIRECTORY launch DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION})

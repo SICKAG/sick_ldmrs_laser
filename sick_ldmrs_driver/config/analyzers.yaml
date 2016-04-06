@@ -5,9 +5,9 @@ analyzers:
     type: AnalyzerGroup
     path: Sensors
     analyzers:
-      sick_ldmrs800001s01:
+      sick_ldmrs_node:
         type: GenericAnalyzer
         path: SICK LD-MRS
         timeout: 5.0
-        find_and_remove_prefix: sick_ldmrs800001s01
+        find_and_remove_prefix: sick_ldmrs_node
         num_items: 1

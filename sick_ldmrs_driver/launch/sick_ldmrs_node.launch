@@ -1,0 +1,3 @@
+<launch>
+  <node name="sick_ldmrs_node" pkg="sick_ldmrs_driver" type="sick_ldmrs_node" output="screen" />
+</launch>

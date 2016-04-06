@@ -38,7 +38,7 @@
 
 #include <pcl_conversions/pcl_conversions.h>
 
-#include "sick_ldmrs_driver/sick_ldmrs800001s01.hpp"
+#include "sick_ldmrs_driver/sick_ldmrs_node.hpp"
 
 #include <sick_ldmrs/datatypes/EvalCaseResults.hpp>
 #include <sick_ldmrs/datatypes/EvalCases.hpp>
@@ -477,7 +477,7 @@ std::string SickLDMRS::flexres_err_to_string(const UINT32 code) const
 
 int main(int argc, char **argv)
 {
-  ros::init(argc, argv, "sick_ldmrs800001s01");
+  ros::init(argc, argv, "sick_ldmrs_node");
   boost::shared_ptr<diagnostic_updater::Updater> diagnostics
     = boost::make_shared<diagnostic_updater::Updater>();
 
