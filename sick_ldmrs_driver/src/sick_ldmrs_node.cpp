@@ -90,6 +90,10 @@ SickLDMRS::~SickLDMRS()
 
 void SickLDMRS::init()
 {
+  if (isUpsideDown())
+  {
+    ROS_ERROR("Error: upside down mode is active, please disable!");
+  }
   initialized_ = true;
   update_config(config_);
 }
@@ -290,6 +294,20 @@ void SickLDMRS::pubObjects(datatypes::ObjectList &objects)
   object_pub_.publish(oa);
 }
 
+bool SickLDMRS::isUpsideDown()
+{
+  devices::LDMRS* ldmrs;
+  ldmrs = dynamic_cast<devices::LDMRS*>(manager_->getFirstDeviceByType(Sourcetype_LDMRS));
+  if (ldmrs == NULL)
+  {
+    ROS_WARN("isUpsideDown: no connection to LDMRS!");
+    return true;
+  }
+
+  UINT32 code;
+  ldmrs->getParameter(devices::ParaUpsideDownMode, &code);
+  return (code != 0);
+}
 
 void SickLDMRS::printFlexResError()
 {
