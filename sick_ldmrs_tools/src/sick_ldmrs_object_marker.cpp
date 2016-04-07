@@ -301,14 +301,6 @@ ros::Publisher pub;
 
 void callback(const sick_ldmrs_msgs::ObjectArray::ConstPtr& oa)
 {
-  visualization_msgs::MarkerArray clear;
-
-  clear.markers.resize(1);
-  clear.markers[0].header = oa->header;
-  clear.markers[0].action = 3;
-
-  pub.publish(clear);
-
   visualization_msgs::MarkerArray velocity;
   velocity.markers.resize(oa->objects.size());
 
