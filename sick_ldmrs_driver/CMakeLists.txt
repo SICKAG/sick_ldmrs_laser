@@ -9,7 +9,8 @@ find_package(catkin REQUIRED
       dynamic_reconfigure
       driver_base
       pcl_conversions
-      sick_ldmrs_msgs)
+      sick_ldmrs_msgs
+      tf)
 
 find_package(Boost REQUIRED COMPONENTS system)
 
