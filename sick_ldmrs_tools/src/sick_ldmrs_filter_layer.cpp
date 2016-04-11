@@ -85,6 +85,7 @@ void callback(const sensor_msgs::PointCloud2::ConstPtr& pc)
   cloud_filtered = boost::make_shared<pcl::PointCloud<pcl::PointXYZ> >();
   for (size_t i = 0; i < cloud->size(); i++)
   {
+    // all points that are *not* the last echo have FlagTransparent set
     if (!(cloud->points[i].flags & sick_ldmrs_msgs::FlagTransparent))
     {
       cloud_filtered->points.push_back(pcl::PointXYZ(cloud->points[i].x, cloud->points[i].y, cloud->points[i].z));
