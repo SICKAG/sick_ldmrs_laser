@@ -4,7 +4,6 @@
   <version>0.0.0</version>
   <description>
     A ROS driver for the SICK LD-MRS series of laser scanners.
-    Currently, the package supports the 8-layer LD-MRS800001S01 scanner.
   </description>
 
   <maintainer email="martin.guenther@dfki.de">Martin Günther</maintainer>
