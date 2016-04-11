@@ -114,7 +114,7 @@ package for details on dynamically reconfigurable parameters.
 
 - The angle of the last range measurement \[rad\]. Range: -1.0471975512 to 0.871573795215
 
-`~scan_frequency` (`int`, default: 2)
+`~scan_frequency` (`int`, default: 0)
 
 - Scan frequency. Possible values are:
   ScanFreq1250 (0): Scan frequency 12.5 Hz,
