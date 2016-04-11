@@ -40,7 +40,9 @@
 #include <sick_ldmrs_msgs/sick_ldmrs_point_type.h>
 #include <pcl/point_cloud.h>
 
-ros::Publisher pub;
+ros::Publisher pub_layer1;
+ros::Publisher pub_first;
+ros::Publisher pub_last;
 
 void callback(const sensor_msgs::PointCloud2::ConstPtr& pc)
 {
@@ -48,8 +50,9 @@ void callback(const sensor_msgs::PointCloud2::ConstPtr& pc)
   pcl::PointCloud<sick_ldmrs_msgs::SICK_LDMRS_Point>::Ptr cloud(new pcl::PointCloud<sick_ldmrs_msgs::SICK_LDMRS_Point>);
   pcl::fromROSMsg(*pc, *cloud);
 
-  pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_filtered(new pcl::PointCloud<pcl::PointXYZ>);
+  pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_filtered = boost::make_shared<pcl::PointCloud<pcl::PointXYZ> >();
 
+  // layer1: only publish points from second layer
   for (size_t i = 0; i < cloud->size(); i++)
   {
     if (cloud->points[i].layer == 1)
@@ -58,11 +61,40 @@ void callback(const sensor_msgs::PointCloud2::ConstPtr& pc)
     }
   }
 
-  sensor_msgs::PointCloud2 msg;
-  pcl::toROSMsg(*cloud_filtered, msg);
-  msg.header = pc->header;
-  pub.publish(msg);
+  sensor_msgs::PointCloud2::Ptr msg = boost::make_shared<sensor_msgs::PointCloud2>();
+  pcl::toROSMsg(*cloud_filtered, *msg);
+  msg->header = pc->header;
+  pub_layer1.publish(msg);
 
+  // first: only publish first echo
+  cloud_filtered = boost::make_shared<pcl::PointCloud<pcl::PointXYZ> >();
+  for (size_t i = 0; i < cloud->size(); i++)
+  {
+    if (cloud->points[i].echo == 0)
+    {
+      cloud_filtered->points.push_back(pcl::PointXYZ(cloud->points[i].x, cloud->points[i].y, cloud->points[i].z));
+    }
+  }
+
+  msg = boost::make_shared<sensor_msgs::PointCloud2>();
+  pcl::toROSMsg(*cloud_filtered, *msg);
+  msg->header = pc->header;
+  pub_first.publish(msg);
+
+  // last: only publish last echo
+  cloud_filtered = boost::make_shared<pcl::PointCloud<pcl::PointXYZ> >();
+  for (size_t i = 0; i < cloud->size(); i++)
+  {
+    if (!(cloud->points[i].flags & sick_ldmrs_msgs::FlagTransparent))
+    {
+      cloud_filtered->points.push_back(pcl::PointXYZ(cloud->points[i].x, cloud->points[i].y, cloud->points[i].z));
+    }
+  }
+
+  msg = boost::make_shared<sensor_msgs::PointCloud2>();
+  pcl::toROSMsg(*cloud_filtered, *msg);
+  msg->header = pc->header;
+  pub_last.publish(msg);
 }
 
 int main(int argc, char **argv)
@@ -71,7 +103,9 @@ int main(int argc, char **argv)
   ros::NodeHandle nh;
 
   ros::Subscriber sub = nh.subscribe("cloud", 1, callback);
-  pub = nh.advertise<sensor_msgs::PointCloud2>("cloud_filtered", 1);
+  pub_layer1 = nh.advertise<sensor_msgs::PointCloud2>("layer1", 1);
+  pub_first = nh.advertise<sensor_msgs::PointCloud2>("first", 1);
+  pub_last = nh.advertise<sensor_msgs::PointCloud2>("last", 1);
 
   ros::spin();
 
