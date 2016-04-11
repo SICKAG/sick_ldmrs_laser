@@ -56,7 +56,7 @@ include_directories(
 
 ## Declare a C++ executable
 add_executable(sick_ldmrs_object_marker src/sick_ldmrs_object_marker.cpp)
-add_executable(sick_ldmrs_filter_layer src/sick_ldmrs_filter_layer.cpp)
+add_executable(sick_ldmrs_filter src/sick_ldmrs_filter.cpp)
 
 ## Add cmake target dependencies of the executable
 ## same as for the library above
@@ -67,7 +67,7 @@ target_link_libraries(sick_ldmrs_object_marker
   ${catkin_LIBRARIES}
 )
 
-target_link_libraries(sick_ldmrs_filter_layer
+target_link_libraries(sick_ldmrs_filter
   ${catkin_LIBRARIES}
   ${PCL_LIBRARIES}
 )
@@ -87,7 +87,7 @@ target_link_libraries(sick_ldmrs_filter_layer
 # )
 
 ## Mark executables and/or libraries for installation
-install(TARGETS sick_ldmrs_object_marker sick_ldmrs_filter_layer
+install(TARGETS sick_ldmrs_object_marker sick_ldmrs_filter
   ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
   LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
   RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}

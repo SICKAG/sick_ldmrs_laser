@@ -100,7 +100,7 @@ void callback(const sensor_msgs::PointCloud2::ConstPtr& pc)
 
 int main(int argc, char **argv)
 {
-  ros::init(argc, argv, "sick_ldmrs_filter_layer");
+  ros::init(argc, argv, "sick_ldmrs_filter");
   ros::NodeHandle nh;
 
   ros::Subscriber sub = nh.subscribe("cloud", 1, callback);
