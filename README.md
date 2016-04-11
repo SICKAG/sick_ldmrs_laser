@@ -4,6 +4,8 @@ sick_ldmrs_laser
 [![Build Status](https://travis-ci.org/SICKAG/sick_ldmrs_laser.svg?branch=indigo)](https://travis-ci.org/SICKAG/sick_ldmrs_laser)
 
 This stack provides a ROS driver for the SICK LD-MRS series of laser scanners.
+The SICK LD-MRS is a multi-layer, multi-echo 3D laser scanner that is geared
+towards rough outdoor environments and also provides object tracking.
 
 ![](https://www.mysick.com/saqqara/image.aspx?id=im0056631)
 
@@ -88,7 +90,7 @@ ROS API
 
 - The output of the object tracking functionality of the scanner. See
   [ObjectArray.msg](sick_ldmrs_msgs/msg/ObjectArray.msg) and
-  [Object.msg](sick_ldmrs_msgs/msg/ObjectArray.msg).
+  [Object.msg](sick_ldmrs_msgs/msg/Object.msg).
 
 `diagnostics` ([diagnostic\_msgs/DiagnosticArray](http://docs.ros.org/api/diagnostic_msgs/html/msg/DiagnosticArray.html))
 
@@ -130,7 +132,7 @@ package for details on dynamically reconfigurable parameters.
 
 - Angular resolution type. Possible values are:
   FocusedRes (0): Focused resolution,
-  ConstantRes (1): Constant resolution,
+  ConstantRes (1): Constant resolution (0.25° @ 12.5 Hz / 0.25° @ 25.0 Hz /  0.5° @ 50.0 Hz),
   FlexRes (2): Flexible resolution
 
 `~layer_range_reduction` (`int`, default: 0)
@@ -268,6 +270,41 @@ package for details on dynamically reconfigurable parameters.
 
 - The host name or IP address of the laser scanner.
 
+##### Notes on FlexRes
+
+Please observe the following constraints when setting the FlexRes parameters
+(user-defined sectors of angular resolution):
+
+* The start angles of each sector have to be given in decreasing order (i.e.,
+  `flexres_start_angle1 < flexres_start_angle2` etc.)
+* The sectors with a resolution of 0.125° must not sum up to more than 20°.
+* The number of shots per scan must be at most 440. (This corresponds to an
+  average angular resolution of 0.25° over the full 110° range.)
+
+The reason for the last two constraints is that the scanner increases the
+shooting frequency when increasing angular resolution. To avoid overheating the
+scanner and limit the amount of data to be processed, it's not possible to use
+0.125° angular resolution for the full range.
+
+
+Unused Scanner Parameters
+-------------------------
+
+The scanner provides a number of parameters that are not exposed via the ROS
+API. Specifically:
+
+* A number of vehicle-related parameters (vehicle velocity, axis lengths,
+  mounting position of the scanner). The "ROS way" of handling this is to use
+  [URDF](http://wiki.ros.org/urdf) to specify the position of the scanner and
+  other forms of localization to provide the transform between world and
+  scanner coordinates.
+* The `upside_down` parameter. In ROS, this is also better handled by
+  specifying the scanner mounting position in the URDF. This driver will print
+  a warning if the `upside_down` parameter was set externally.
+* SOPAS fields and eval cases.
+* *Setting* the TCP/IP configuration of the scanner. Not supported by this
+  driver to avoid accidentally making the scanner unaccessible; use the
+  software provided with the scanner instead.
 
 ------------------------------------------------------------------------
 
