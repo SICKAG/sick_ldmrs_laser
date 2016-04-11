@@ -8,10 +8,10 @@ namespace sick_ldmrs_msgs
 struct SICK_LDMRS_Point
 {
   PCL_ADD_POINT4D;
-  uint16_t echowidth;
-  uint8_t layer;
-  uint8_t echo;
-  uint8_t flags;
+  uint16_t echowidth;         // Pulse width of this ech pulse, in cm
+  uint8_t layer;              // Scan layer of this point (0..7); 0 is lowermost layer
+  uint8_t echo;               // Echo number of this point (0..2); 0 is first echo
+  uint8_t flags;              // Scan point flags; one of enum Flags
   EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 } EIGEN_ALIGN16;
 
