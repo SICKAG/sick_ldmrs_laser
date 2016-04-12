@@ -59,6 +59,7 @@ add_executable(sick_ldmrs_object_marker src/sick_ldmrs_object_marker.cpp)
 add_executable(sick_ldmrs_filter_layer src/sick_ldmrs_filter_layer.cpp)
 add_executable(sick_ldmrs_filter_first src/sick_ldmrs_filter_first.cpp)
 add_executable(sick_ldmrs_filter_last src/sick_ldmrs_filter_last.cpp)
+add_executable(sick_ldmrs_print_resolution src/sick_ldmrs_print_resolution.cpp)
 
 ## Add cmake target dependencies of the executable
 ## same as for the library above
@@ -84,6 +85,11 @@ target_link_libraries(sick_ldmrs_filter_last
   ${PCL_LIBRARIES}
 )
 
+target_link_libraries(sick_ldmrs_print_resolution
+  ${catkin_LIBRARIES}
+  ${PCL_LIBRARIES}
+)
+
 #############
 ## Install ##
 #############
@@ -99,7 +105,7 @@ target_link_libraries(sick_ldmrs_filter_last
 # )
 
 ## Mark executables and/or libraries for installation
-install(TARGETS sick_ldmrs_object_marker sick_ldmrs_filter_layer sick_ldmrs_filter_first sick_ldmrs_filter_last
+install(TARGETS sick_ldmrs_object_marker sick_ldmrs_filter_layer sick_ldmrs_filter_first sick_ldmrs_filter_last sick_ldmrs_print_resolution
   ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
   LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
   RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
