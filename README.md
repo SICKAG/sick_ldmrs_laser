@@ -71,7 +71,21 @@ Package overview
   scanner's object tracking functionality and a PCL point type used in the
   PointCloud2 topic.
 * **sick_ldmrs_tools**: This package provides example nodes that demonstrate
-  how to subscribe to the topics provided by the scanner and use the data.
+  how to subscribe to the topics provided by the scanner and use the data:
+
+  - `sick_ldmrs_filter_first`: Filters the point cloud and only output the
+    first echo of each beam.
+  - `sick_ldmrs_filter_last`: Filters the point cloud and only output the
+    last echo of each beam.
+  - `sick_ldmrs_filter_layer`: Filters the point cloud and only output points
+    from the second layer.
+  - `sick_ldmrs_object_marker`: Subscribes to the `objects` topic and publishes
+    the object tracking information as
+    [visualization\_msgs/MarkerArray](http://docs.ros.org/api/visualization_msgs/html/msg/MarkerArray.html)
+    for visualization in RViz.
+  - `sick_ldmrs_print_resolution`: Subscribes to the point cloud and prints the
+    angular resolution sectors. Useful to verify that the FocusedRes / FlexRes
+    features are working as expected.
 
 
 ROS API
@@ -276,7 +290,7 @@ Please observe the following constraints when setting the FlexRes parameters
 (user-defined sectors of angular resolution):
 
 * The start angles of each sector have to be given in decreasing order (i.e.,
-  `flexres_start_angle1 < flexres_start_angle2` etc.)
+  `flexres_start_angle1 > flexres_start_angle2` etc.)
 * The sectors with a resolution of 0.125° must not sum up to more than 20°.
 * The number of shots per scan must be at most 440. (This corresponds to an
   average angular resolution of 0.25° over the full 110° range.)
