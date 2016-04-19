@@ -89,6 +89,8 @@ Package overview
     layers.
   - `sick_ldmrs_make_organized`: Subscribes to the point cloud and turns it
     into an [organized point cloud](http://pointclouds.org/documentation/tutorials/basic_structures.php).
+  - `sick_ldmrs_remove_background`: Removes static background points from an
+    organized input point cloud, assuming the scanner is stationary.
   - `sick_ldmrs_print_resolution`: Subscribes to the point cloud and prints the
     angular resolution sectors. Useful to verify that the FocusedRes / FlexRes
     features are working as expected.
