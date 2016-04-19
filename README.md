@@ -83,6 +83,10 @@ Package overview
     the object tracking information as
     [visualization\_msgs/MarkerArray](http://docs.ros.org/api/visualization_msgs/html/msg/MarkerArray.html)
     for visualization in RViz.
+  - `sick_ldmrs_all_layer_assembler`: Subscribes to the point cloud, transforms
+    it into a fixed frame and assembles one point clouds of the lower four
+    layers and one of the upper four layers into a point cloud of all eight
+    layers.
   - `sick_ldmrs_print_resolution`: Subscribes to the point cloud and prints the
     angular resolution sectors. Useful to verify that the FocusedRes / FlexRes
     features are working as expected.
