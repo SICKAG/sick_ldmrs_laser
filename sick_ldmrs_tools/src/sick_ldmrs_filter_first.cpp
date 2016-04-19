@@ -40,22 +40,25 @@
 #include <sick_ldmrs_msgs/sick_ldmrs_point_type.h>
 #include <pcl/point_cloud.h>
 
+typedef sick_ldmrs_msgs::SICK_LDMRS_Point PointT;
+typedef pcl::PointCloud<PointT> PointCloudT;
+
 ros::Publisher pub;
 
 void callback(const sensor_msgs::PointCloud2::ConstPtr& pc)
 {
 
-  pcl::PointCloud<sick_ldmrs_msgs::SICK_LDMRS_Point>::Ptr cloud(new pcl::PointCloud<sick_ldmrs_msgs::SICK_LDMRS_Point>);
+  PointCloudT::Ptr cloud = boost::make_shared<PointCloudT>();
   pcl::fromROSMsg(*pc, *cloud);
 
-  pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_filtered = boost::make_shared<pcl::PointCloud<pcl::PointXYZ> >();
+  PointCloudT::Ptr cloud_filtered = boost::make_shared<PointCloudT>();
 
   // first: only publish first echo
   for (size_t i = 0; i < cloud->size(); i++)
   {
     if (cloud->points[i].echo == 0)
     {
-      cloud_filtered->points.push_back(pcl::PointXYZ(cloud->points[i].x, cloud->points[i].y, cloud->points[i].z));
+      cloud_filtered->points.push_back(cloud->points[i]);
     }
   }
 
