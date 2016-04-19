@@ -87,6 +87,8 @@ Package overview
     it into a fixed frame and assembles one point clouds of the lower four
     layers and one of the upper four layers into a point cloud of all eight
     layers.
+  - `sick_ldmrs_make_organized`: Subscribes to the point cloud and turns it
+    into an [organized point cloud](http://pointclouds.org/documentation/tutorials/basic_structures.php).
   - `sick_ldmrs_print_resolution`: Subscribes to the point cloud and prints the
     angular resolution sectors. Useful to verify that the FocusedRes / FlexRes
     features are working as expected.
