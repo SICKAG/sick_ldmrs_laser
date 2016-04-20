@@ -38,20 +38,17 @@
 
 #include <sensor_msgs/PointCloud2.h>
 #include <sick_ldmrs_msgs/sick_ldmrs_point_type.h>
-#include <pcl/point_cloud.h>
+#include <pcl_ros/point_cloud.h>
 
 typedef sick_ldmrs_msgs::SICK_LDMRS_Point PointT;
 typedef pcl::PointCloud<PointT> PointCloudT;
 
 ros::Publisher pub;
 
-void callback(const sensor_msgs::PointCloud2::ConstPtr& pc)
+void callback(const PointCloudT::ConstPtr& cloud)
 {
-
-  PointCloudT::Ptr cloud = boost::make_shared<PointCloudT>();
-  pcl::fromROSMsg(*pc, *cloud);
-
   PointCloudT::Ptr cloud_filtered = boost::make_shared<PointCloudT>();
+  cloud_filtered->header = cloud->header;
 
   // layer1: only publish points from second layer
   for (size_t i = 0; i < cloud->size(); i++)
@@ -62,10 +59,7 @@ void callback(const sensor_msgs::PointCloud2::ConstPtr& pc)
     }
   }
 
-  sensor_msgs::PointCloud2::Ptr msg = boost::make_shared<sensor_msgs::PointCloud2>();
-  pcl::toROSMsg(*cloud_filtered, *msg);
-  msg->header = pc->header;
-  pub.publish(msg);
+  pub.publish(cloud_filtered);
 }
 
 int main(int argc, char **argv)
@@ -74,7 +68,7 @@ int main(int argc, char **argv)
   ros::NodeHandle nh;
 
   ros::Subscriber sub = nh.subscribe("cloud", 1, callback);
-  pub = nh.advertise<sensor_msgs::PointCloud2>("layer1", 1);
+  pub = nh.advertise<PointCloudT>("layer1", 1);
 
   ros::spin();
 
