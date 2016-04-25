@@ -7,7 +7,6 @@ find_package(catkin REQUIRED
       sensor_msgs
       diagnostic_updater
       dynamic_reconfigure
-      driver_base
       pcl_conversions
       sick_ldmrs_msgs
       tf)

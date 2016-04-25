@@ -20,7 +20,6 @@
   <build_depend>sensor_msgs</build_depend>
   <build_depend>diagnostic_updater</build_depend>
   <build_depend>dynamic_reconfigure</build_depend>
-  <build_depend>driver_base</build_depend>
   <build_depend>pcl_conversions</build_depend>
   <build_depend>sick_ldmrs_msgs</build_depend>
   <build_depend>tf</build_depend>
@@ -29,7 +28,6 @@
   <run_depend>sensor_msgs</run_depend>
   <run_depend>diagnostic_updater</run_depend>
   <run_depend>dynamic_reconfigure</run_depend>
-  <run_depend>driver_base</run_depend>
   <run_depend>pcl_conversions</run_depend>
   <run_depend>sick_ldmrs_msgs</run_depend>
   <run_depend>tf</run_depend>
