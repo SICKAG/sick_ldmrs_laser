@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<package>
+<package format="2">
   <name>sick_ldmrs_laser</name>
   <version>0.0.0</version>
   <description>
@@ -17,12 +17,13 @@
 
   <buildtool_depend>catkin</buildtool_depend>
 
-  <run_depend>sick_ldmrs_description</run_depend>
-  <run_depend>sick_ldmrs_driver</run_depend>
-  <run_depend>sick_ldmrs_msgs</run_depend>
-  <run_depend>sick_ldmrs_tools</run_depend>
+  <exec_depend>sick_ldmrs_description</exec_depend>
+  <exec_depend>sick_ldmrs_driver</exec_depend>
+  <exec_depend>sick_ldmrs_msgs</exec_depend>
+  <exec_depend>sick_ldmrs_tools</exec_depend>
 
   <export>
     <metapackage/>
+    <architecture_independent/>
   </export>
 </package>
