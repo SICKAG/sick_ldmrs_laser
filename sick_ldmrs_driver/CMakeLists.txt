@@ -32,6 +32,7 @@ target_link_libraries(sick_ldmrs_node
     ${catkin_LIBRARIES}
     ${SICK_LDMRS_LIBRARIES})
 add_dependencies(sick_ldmrs_node ${PROJECT_NAME}_gencfg)
+add_dependencies(sick_ldmrs_node ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 
 install(TARGETS sick_ldmrs_node
     RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION})
