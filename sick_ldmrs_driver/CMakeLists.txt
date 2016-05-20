@@ -34,6 +34,12 @@ target_link_libraries(sick_ldmrs_node
 add_dependencies(sick_ldmrs_node ${PROJECT_NAME}_gencfg)
 add_dependencies(sick_ldmrs_node ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 
+## Mark cpp header files for installation
+install(DIRECTORY include/${PROJECT_NAME}/
+  DESTINATION ${CATKIN_PACKAGE_INCLUDE_DESTINATION}
+  FILES_MATCHING PATTERN "*.hpp"
+)
+
 install(TARGETS sick_ldmrs_node
     RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION})
 install(DIRECTORY config DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION})

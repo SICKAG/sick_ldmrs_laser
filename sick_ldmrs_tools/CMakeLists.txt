@@ -15,8 +15,6 @@ find_package(catkin REQUIRED COMPONENTS
 )
 
 find_package(PCL 1.7 REQUIRED REQUIRED)
-include_directories(${PCL_INCLUDE_DIRS})
-link_directories(${PCL_LIBRARY_DIRS})
 add_definitions(${PCL_DEFINITIONS})
 
 
@@ -32,7 +30,7 @@ add_definitions(${PCL_DEFINITIONS})
 catkin_package(
 #  INCLUDE_DIRS include
 #  LIBRARIES sick_ldmrs_tools
-#  CATKIN_DEPENDS roscpp sick_ldmrs_msgs
+  CATKIN_DEPENDS roscpp visualization_msgs sick_ldmrs_msgs
 #  DEPENDS system_lib
 )
 
@@ -45,6 +43,7 @@ catkin_package(
 # include_directories(include)
 include_directories(
   ${catkin_INCLUDE_DIRS}
+  ${PCL_INCLUDE_DIRS}
 )
 
 ## Declare a C++ library

@@ -21,5 +21,6 @@
   <depend>message_filters</depend>
   <depend>pcl_ros</depend>
   <depend>tf</depend>
+  <depend>pcl_conversions</depend>
   <depend>libpcl-all-dev</depend>
 </package>
