@@ -43,8 +43,8 @@ The driver has not been released yet. But once that happens, you can install it 
 source /opt/ros/<rosdistro>/setup.bash
 mkdir -p ~/ros_catkin_ws/src/
 cd ~/ros_catkin_ws/src/
-git clone git@gitlab.informatik.uni-osnabrueck.de:sickag/libsick-ldmrs.git                    # TODO: GitHub
-git clone -b <rosdistro> git@gitlab.informatik.uni-osnabrueck.de:sickag/sick_ldmrs_laser.git  # TODO: GitHub
+git clone https://github.com/SICKAG/libsick_ldmrs.git
+git clone -b <rosdistro> https://github.com/SICKAG/sick_ldmrs_laser.git
 cd ..
 catkin_make_isolated --install -DCMAKE_BUILD_TYPE=Release
 source ~/ros_catkin_ws/install_isolated/setup.bash
