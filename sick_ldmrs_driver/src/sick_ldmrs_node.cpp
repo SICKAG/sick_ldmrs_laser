@@ -555,6 +555,8 @@ int main(int argc, char **argv)
   std::string serial_number = ldmrs->getSerialNumber();
   diagnostics->setHardwareID(serial_number);
 
+  ROS_INFO("LD-MRS Firmware version is %s", ldmrs->getFirmwareVersion().c_str());
+
   // we need to initialize the app after setting up the ldmrs device
   app.init();
 
