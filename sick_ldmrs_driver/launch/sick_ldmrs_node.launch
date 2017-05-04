@@ -1,5 +1,5 @@
 <launch>
-  <node name="sick_ldmrs_node" pkg="sick_ldmrs_driver" type="sick_ldmrs_node" output="screen" />
+  <node name="sick_ldmrs_node" pkg="sick_ldmrs_driver" type="sick_ldmrs_node" output="screen">
   <!-- defaults (dynamically reconfigurable):
     <param name="frame_id" type="str" value="ldmrs" />
     <param name="start_angle" type="double" value="0.872664625997" />
@@ -36,3 +36,4 @@
   </node>
 
 </launch>
+

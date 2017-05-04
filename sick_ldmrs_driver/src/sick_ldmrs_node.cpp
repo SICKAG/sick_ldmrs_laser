@@ -539,7 +539,7 @@ int main(int argc, char **argv)
   ROS_INFO("Adding the LDMRS device.");
   devices::LDMRS* ldmrs = new devices::LDMRS(&manager);
   ldmrs->setWeWantObjectData(true);
-  std::string hostname = "192.168.1.202";
+  std::string hostname;
   ros::NodeHandle nh("~");
   nh.param<std::string>("hostname", hostname, "192.168.0.1");
   ROS_INFO("Set IP address to %s", hostname.c_str());
