@@ -5,7 +5,8 @@ sick_ldmrs_laser
 
 This stack provides a ROS driver for the SICK LD-MRS series of laser scanners.
 The SICK LD-MRS is a multi-layer, multi-echo 3D laser scanner that is geared
-towards rough outdoor environments and also provides object tracking.
+towards rough outdoor environments and also provides object tracking. The
+driver also works for the identical devices from IBEO.
 
 ![](https://www.mysick.com/saqqara/image.aspx?id=im0056631)
 
@@ -17,13 +18,13 @@ This driver should work with all of the following products. However, it has
 only been tested and confirmed working on the LD-MRS800001S01 so far. If you
 try any of the other scanners and run into trouble, please open an issue.
 
-| **device name**    | **part no.**                                                                | **description**      | **tested?** |
-|--------------------|-----------------------------------------------------------------------------|----------------------|:-----------:|
-| LD-MRS400001       | [1045046](https://www.mysick.com/eCatSEO.aspx?go=DataSheet&ProductID=34057) | 4 layer (standard)   |             |
-| LD-MRS400001S01    | [1052960](https://www.mysick.com/eCatSEO.aspx?go=DataSheet&ProductID=55876) | 4 layer (standard)   |             |
-| LD-MRS400102 HD    | [1047145](https://www.mysick.com/eCatSEO.aspx?go=DataSheet&ProductID=34058) | 4 layer (heavy duty) |             |
-| LD-MRS400102S01 HD | [1052961](https://www.mysick.com/eCatSEO.aspx?go=DataSheet&ProductID=55877) | 4 layer (heavy duty) |             |
-| LD-MRS800001S01    | [1069408](https://www.mysick.com/eCatSEO.aspx?go=DataSheet&ProductID=96894) | 8 layer (standard)   |      ✔      |
+| **device name**    | **identical to**  | **part no.**                                                                | **description**                                | **tested?** |
+|--------------------|-------------------|-----------------------------------------------------------------------------|------------------------------------------------|:-----------:|
+| LD-MRS400001       |                   | [1045046](https://www.mysick.com/eCatSEO.aspx?go=DataSheet&ProductID=34057) | 4 layer (standard)                             |      ✔      |
+| LD-MRS400001S01    | IBEO LUX Standard | [1052960](https://www.mysick.com/eCatSEO.aspx?go=DataSheet&ProductID=55876) | 4 layer (standard, includes object tracking)   |      ✔      |
+| LD-MRS400102 HD    |                   | [1047145](https://www.mysick.com/eCatSEO.aspx?go=DataSheet&ProductID=34058) | 4 layer (heavy duty)                           |      ✔      |
+| LD-MRS400102S01 HD | IBEO LUX HD       | [1052961](https://www.mysick.com/eCatSEO.aspx?go=DataSheet&ProductID=55877) | 4 layer (heavy duty, includes object tracking) |             |
+| LD-MRS800001S01    | IBEO LUX 8L       | [1069408](https://www.mysick.com/eCatSEO.aspx?go=DataSheet&ProductID=96894) | 8 layer (standard)                             |      ✔      |
 
 
 Installation
