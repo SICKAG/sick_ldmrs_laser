@@ -76,6 +76,7 @@ SickLDMRS::SickLDMRS(Manager *manager, boost::shared_ptr<diagnostic_updater::Upd
   object_pub_ = nh_.advertise<sick_ldmrs_msgs::ObjectArray>("objects", 1);
 
   diagnostics_->setHardwareID("none");   // set from device after connection
+  diagnostics_->add("device info", this, &SickLDMRS::produce_diagnostics);
   diagnosticPub_ = new diagnostic_updater::DiagnosedPublisher<sensor_msgs::PointCloud2>(pub_, *diagnostics_,
       // frequency should be target +- 10%
       diagnostic_updater::FrequencyStatusParam(&expected_frequency_, &expected_frequency_, 0.1, 10),
@@ -96,6 +97,21 @@ void SickLDMRS::init()
   }
   initialized_ = true;
   update_config(config_);
+}
+
+void SickLDMRS::produce_diagnostics(diagnostic_updater::DiagnosticStatusWrapper &stat)
+{
+  devices::LDMRS* ldmrs;
+  ldmrs = dynamic_cast<devices::LDMRS*>(manager_->getFirstDeviceByType(Sourcetype_LDMRS));
+  stat.summary(diagnostic_msgs::DiagnosticStatus::OK, "Device information.");
+
+  // REP-138 values (http://www.ros.org/reps/rep-0138.html#diagnostic-keys)
+  stat.add("IP Address", ldmrs->getIpAddress());
+  stat.add("IP Port", 12002);   // LUX port number
+  stat.add("Vendor Name", "SICK");
+  stat.add("Product Name", "LD-MRS");
+  stat.add("Firmware Version", ldmrs->getFirmwareVersion());  // includes date, e.g. "3.03.5 2015-01-14 13:32"
+  stat.add("Device ID", ldmrs->getSerialNumber());
 }
 
 void SickLDMRS::setData(BasicData &data)

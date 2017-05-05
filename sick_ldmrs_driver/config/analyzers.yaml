@@ -10,4 +10,4 @@ analyzers:
         path: SICK LD-MRS
         timeout: 5.0
         find_and_remove_prefix: sick_ldmrs_node
-        num_items: 1
+        num_items: 2

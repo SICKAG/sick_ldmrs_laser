@@ -68,6 +68,7 @@ public:
   SickLDMRS(Manager* manager, boost::shared_ptr<diagnostic_updater::Updater> diagnostics);
   virtual ~SickLDMRS();
   void init();
+  void produce_diagnostics(diagnostic_updater::DiagnosticStatusWrapper &stat);
   void validate_config(SickLDMRSDriverConfig &conf);
   void update_config(SickLDMRSDriverConfig &new_config, uint32_t level = 0);
   void pubObjects(datatypes::ObjectList &objects);
