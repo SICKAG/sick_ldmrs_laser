@@ -34,7 +34,13 @@ script:
   # Build [and Install] packages
   - ln -s $TRAVIS_BUILD_DIR $CATKIN_WS_SRC
   - catkin build --limit-status-rate 0.1 --no-notify -DCMAKE_BUILD_TYPE=Release
+  # NOTE on testing: `catkin run_tests` will show the output of the tests
+  # (gtest, nosetest, etc..) but always returns 0 (success) even if a test
+  # fails. Running `catkin_test_results` aggregates all the results and returns
+  # non-zero when a test fails (which notifies the CI that the build failed).
   # Build tests
-  - catkin build --limit-status-rate 0.1 --no-notify sick_ldmrs_laser --make-args tests
+  - catkin build --limit-status-rate 0.1 --no-notify sick_ldmrs_description sick_ldmrs_driver sick_ldmrs_laser sick_ldmrs_msgs sick_ldmrs_tools --make-args tests
   # Run tests
-  - catkin test sick_ldmrs_description sick_ldmrs_driver sick_ldmrs_laser sick_ldmrs_msgs sick_ldmrs_tools
+  - catkin run_tests
+  # Verify test results
+  - catkin_test_results
