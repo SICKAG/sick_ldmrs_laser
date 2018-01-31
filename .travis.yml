@@ -37,4 +37,4 @@ script:
   # Build tests
   - catkin build --limit-status-rate 0.1 --no-notify sick_ldmrs_laser --make-args tests
   # Run tests
-  - catkin run_tests
+  - catkin test
