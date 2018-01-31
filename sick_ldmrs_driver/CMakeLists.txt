@@ -1,15 +1,16 @@
 cmake_minimum_required(VERSION 2.8.3)
 project(sick_ldmrs_driver)
 
-find_package(catkin REQUIRED
-    COMPONENTS
-      roscpp
-      sensor_msgs
-      diagnostic_updater
-      dynamic_reconfigure
-      pcl_conversions
-      sick_ldmrs_msgs
-      tf)
+find_package(catkin REQUIRED COMPONENTS
+  diagnostic_updater
+  dynamic_reconfigure
+  pcl_conversions
+  roscpp
+  roslaunch
+  sensor_msgs
+  sick_ldmrs_msgs
+  tf
+)
 
 find_package(Boost REQUIRED COMPONENTS system)
 
@@ -44,3 +45,9 @@ install(TARGETS sick_ldmrs_node
     RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION})
 install(DIRECTORY config DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION})
 install(DIRECTORY launch DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION})
+
+#############
+## Testing ##
+#############
+
+roslaunch_add_file_check(launch)

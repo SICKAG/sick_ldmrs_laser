@@ -5,13 +5,14 @@ project(sick_ldmrs_tools)
 ## if COMPONENTS list like find_package(catkin REQUIRED COMPONENTS xyz)
 ## is used, also find other catkin packages
 find_package(catkin REQUIRED COMPONENTS
-  roscpp
-  visualization_msgs
-  sick_ldmrs_msgs
   message_filters
-  pcl_ros
-  tf
   pcl_conversions
+  pcl_ros
+  roscpp
+  roslaunch
+  sick_ldmrs_msgs
+  tf
+  visualization_msgs
 )
 
 find_package(PCL 1.7 REQUIRED REQUIRED)
@@ -161,3 +162,5 @@ install(DIRECTORY launch DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION})
 
 ## Add folders to be run by python nosetests
 # catkin_add_nosetests(test)
+
+roslaunch_add_file_check(launch)

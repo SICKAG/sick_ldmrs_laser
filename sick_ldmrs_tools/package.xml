@@ -15,12 +15,14 @@
 
   <buildtool_depend>catkin</buildtool_depend>
 
-  <depend>roscpp</depend>
-  <depend>visualization_msgs</depend>
-  <depend>sick_ldmrs_msgs</depend>
-  <depend>message_filters</depend>
-  <depend>pcl_ros</depend>
-  <depend>tf</depend>
-  <depend>pcl_conversions</depend>
   <depend>libpcl-all-dev</depend>
+  <depend>message_filters</depend>
+  <depend>pcl_conversions</depend>
+  <depend>pcl_ros</depend>
+  <depend>roscpp</depend>
+  <depend>sick_ldmrs_msgs</depend>
+  <depend>tf</depend>
+  <depend>visualization_msgs</depend>
+
+  <build_depend>roslaunch</build_depend>
 </package>
