@@ -25,4 +25,6 @@
   <depend>tf</depend>
 
   <build_depend>roslaunch</build_depend>
+
+  <exec_depend>diagnostic_aggregator</exec_depend>
 </package>
