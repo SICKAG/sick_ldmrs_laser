@@ -3,10 +3,13 @@ sudo: required
 services:
   - docker
 
-before_install:
-  - docker build -t sick_ldmrs_laser_kinetic -f Dockerfile-kinetic .
-  - docker build -t sick_ldmrs_laser_melodic -f Dockerfile-melodic .
+env:
+  matrix:
+    - CI_ROS_DISTRO="kinetic"
+    - CI_ROS_DISTRO="melodic"
+
+install:
+  - docker build -t sick_ldmrs_laser_$CI_ROS_DISTRO -f Dockerfile-$CI_ROS_DISTRO .
 
 script:
-  - docker run sick_ldmrs_laser_kinetic /bin/bash -c "source devel/setup.bash && catkin run_tests && catkin_test_results"
-  - docker run sick_ldmrs_laser_melodic /bin/bash -c "source devel/setup.bash && catkin run_tests && catkin_test_results"
+  - docker run sick_ldmrs_laser_$CI_ROS_DISTRO /bin/bash -c "source devel/setup.bash && catkin run_tests && catkin_test_results"
