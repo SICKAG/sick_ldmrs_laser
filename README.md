@@ -8,37 +8,27 @@ The SICK LD-MRS is a multi-layer, multi-echo 3D laser scanner that is geared
 towards rough outdoor environments and also provides object tracking. The
 driver also works for the identical devices from IBEO.
 
-![](https://www.mysick.com/saqqara/image.aspx?id=im0056631)
-
 
 Supported Hardware
 ------------------
 
-This driver should work with all of the following products. However, it has
-only been tested and confirmed working on the LD-MRS800001S01 so far. If you
-try any of the other scanners and run into trouble, please open an issue.
+This driver has been tested and confirmed working on the following products. If
+you have successfully used this driver with a LD-MRS scanner which is not on
+this list, please contact us so we can add it.
 
-| **device name**    | **identical to**  | **part no.**                                                                | **description**                                | **tested?** |
-|--------------------|-------------------|-----------------------------------------------------------------------------|------------------------------------------------|:-----------:|
-| LD-MRS400001       |                   | [1045046](https://www.mysick.com/eCatSEO.aspx?go=DataSheet&ProductID=34057) | 4 layer (standard)                             |      ✔      |
-| LD-MRS400001S01    | IBEO LUX Standard | [1052960](https://www.mysick.com/eCatSEO.aspx?go=DataSheet&ProductID=55876) | 4 layer (standard, includes object tracking)   |      ✔      |
-| LD-MRS400102 HD    |                   | [1047145](https://www.mysick.com/eCatSEO.aspx?go=DataSheet&ProductID=34058) | 4 layer (heavy duty)                           |      ✔      |
-| LD-MRS400102S01 HD | IBEO LUX HD       | [1052961](https://www.mysick.com/eCatSEO.aspx?go=DataSheet&ProductID=55877) | 4 layer (heavy duty, includes object tracking) |             |
-| LD-MRS800001S01    | IBEO LUX 8L       | [1069408](https://www.mysick.com/eCatSEO.aspx?go=DataSheet&ProductID=96894) | 8 layer (standard)                             |      ✔      |
+|                                                            | **device name**    | **identical to**  | **part no.**                                                                                                               | **description**                                |
+|------------------------------------------------------------|--------------------|-------------------|----------------------------------------------------------------------------------------------------------------------------|------------------------------------------------|
+| ![](https://cdn.sick.com/media/220/3/33/633/IM0056633.png) | LD-MRS400001       |                   | [1045046](https://www.sick.com/gb/en/detection-and-ranging-solutions/3d-lidar-sensors/ld-mrs/ld-mrs400001/p/p112355)       | 4 layer (standard)                             |
+| ![](https://cdn.sick.com/media/220/3/33/633/IM0056633.png) | LD-MRS400001S01    | IBEO LUX Standard | [1052960](https://www.sick.com/gb/en/detection-and-ranging-solutions/3d-lidar-sensors/ld-mrs/ld-mrs400001s01/p/p251942)    | 4 layer (standard, includes object tracking)   |
+| ![](https://cdn.sick.com/media/220/2/32/632/IM0056632.png) | LD-MRS400102 HD    |                   | [1047145](https://www.sick.com/gb/en/detection-and-ranging-solutions/3d-lidar-sensors/ld-mrs/ld-mrs400102-hd/p/p117440)    | 4 layer (heavy duty)                           |
+| ![](https://cdn.sick.com/media/220/2/32/632/IM0056632.png) | LD-MRS400102S01 HD | IBEO LUX HD       | [1052961](https://www.sick.com/gb/en/detection-and-ranging-solutions/3d-lidar-sensors/ld-mrs/ld-mrs400102s01-hd/p/p251943) | 4 layer (heavy duty, includes object tracking) |
+| ![](https://cdn.sick.com/media/220/1/31/631/IM0056631.png) | LD-MRS800001S01    | IBEO LUX 8L       | [1069408](https://www.sick.com/gb/en/detection-and-ranging-solutions/3d-lidar-sensors/ld-mrs/ld-mrs800001s01/p/p370845)    | 8 layer (standard)                             |
 
 
 Installation
 ------------
 
 In the following instructions, replace `<rosdistro>` with the name of your ROS distro (e.g., `indigo`).
-
-### From binaries
-
-The driver has not been released yet. But once that happens, you can install it directly by typing:
-
-~~`sudo apt-get install ros-<rosdistro>-sick-ldmrs-laser`~~
-
-### From source
 
 ```bash
 source /opt/ros/<rosdistro>/setup.bash
