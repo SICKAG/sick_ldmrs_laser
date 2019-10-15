@@ -9,7 +9,7 @@ RUN  mkdir -p /ws/src
 RUN /bin/bash -c "cd /ws && \
     source /opt/ros/kinetic/setup.bash && \
     catkin init && \
-    catkin config --install -j 1 -p 1 && \
+    catkin config --install --cmake-args -DCMAKE_BUILD_TYPE=Release && \
     catkin build --limit-status-rate 0.1 --no-notify"
 
 COPY . /ws/src/sick_ldmrs_laser
@@ -20,5 +20,5 @@ WORKDIR /ws
 # Use rosdep to install all dependencies (including ROS itself)
 RUN rosdep install --from-paths src -i -y --rosdistro kinetic
 
-RUN /bin/bash -c "source /ws/devel/setup.bash && \
-    catkin build --limit-status-rate 0.1 --no-notify -DCMAKE_BUILD_TYPE=Release"
+RUN /bin/bash -c "source /ws/install/setup.bash && \
+    catkin build --limit-status-rate 0.1 --no-notify"
