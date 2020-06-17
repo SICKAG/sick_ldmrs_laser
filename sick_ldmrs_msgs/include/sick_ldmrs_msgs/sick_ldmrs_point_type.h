@@ -1,6 +1,7 @@
 #define PCL_NO_PRECOMPILE
 #include <pcl/point_types.h>
 #include <pcl/point_cloud.h>
+#include <cstdint>
 
 namespace sick_ldmrs_msgs
 {
@@ -8,10 +9,10 @@ namespace sick_ldmrs_msgs
 struct SICK_LDMRS_Point
 {
   PCL_ADD_POINT4D;
-  uint16_t echowidth;         // Pulse width of this ech pulse, in cm
-  uint8_t layer;              // Scan layer of this point (0..7); 0 is lowermost layer
-  uint8_t echo;               // Echo number of this point (0..2); 0 is first echo
-  uint8_t flags;              // Scan point flags; one of enum Flags
+  std::uint16_t echowidth;         // Pulse width of this ech pulse, in cm
+  std::uint8_t layer;              // Scan layer of this point (0..7); 0 is lowermost layer
+  std::uint8_t echo;               // Echo number of this point (0..2); 0 is first echo
+  std::uint8_t flags;              // Scan point flags; one of enum Flags
   EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 } EIGEN_ALIGN16;
 
@@ -28,8 +29,8 @@ POINT_CLOUD_REGISTER_POINT_STRUCT(sick_ldmrs_msgs::SICK_LDMRS_Point,
                                   (float, x, x)
                                   (float, y, y)
                                   (float, z, z)
-                                  (uint16_t, echowidth, echowidth)
-                                  (uint8_t, layer, layer)
-                                  (uint8_t, echo, echo)
-                                  (uint8_t, flags, flags)
+                                  (std::uint16_t, echowidth, echowidth)
+                                  (std::uint8_t, layer, layer)
+                                  (std::uint8_t, echo, echo)
+                                  (std::uint8_t, flags, flags)
                                  )
