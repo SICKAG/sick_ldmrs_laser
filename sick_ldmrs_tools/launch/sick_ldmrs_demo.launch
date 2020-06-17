@@ -34,6 +34,6 @@
   </node>
 
   <!-- publish TF -->
-  <node pkg="robot_state_publisher" type="state_publisher" name="robot_state_publisher" />
+  <node pkg="robot_state_publisher" type="robot_state_publisher" name="robot_state_publisher" />
 </launch>
 
