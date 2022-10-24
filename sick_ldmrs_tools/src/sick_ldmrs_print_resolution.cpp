@@ -195,7 +195,7 @@ void checkResolution(const PointCloudT::ConstPtr cloud)
 void callback(const sensor_msgs::PointCloud2::ConstPtr& pc)
 {
 
-  PointCloudT::Ptr cloud = boost::make_shared<PointCloudT>();
+  PointCloudT::Ptr cloud = pcl::make_shared<PointCloudT>();
   pcl::fromROSMsg(*pc, *cloud);
 
   checkResolution(cloud);

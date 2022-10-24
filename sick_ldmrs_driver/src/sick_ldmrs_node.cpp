@@ -138,7 +138,7 @@ void SickLDMRS::setData(BasicData &data)
                 time.toString().c_str(),
                 time.toLongString().c_str());
 
-      PointCloud::Ptr cloud = boost::make_shared<PointCloud>();
+      PointCloud::Ptr cloud = pcl::make_shared<PointCloud>();
       cloud->header.frame_id = config_.frame_id;
       // not using time stamp from scanner here, because it is delayed by up to 1.5 seconds
       cloud->header.stamp = (ros::Time::now().toSec() - 1 / expected_frequency_) * 1e6;

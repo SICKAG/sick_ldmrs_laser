@@ -47,7 +47,7 @@ ros::Publisher pub;
 
 void callback(const PointCloudT::ConstPtr& cloud)
 {
-  PointCloudT::Ptr cloud_filtered = boost::make_shared<PointCloudT>();
+  PointCloudT::Ptr cloud_filtered = pcl::make_shared<PointCloudT>();
   cloud_filtered->header = cloud->header;
 
   // first: only publish first echo

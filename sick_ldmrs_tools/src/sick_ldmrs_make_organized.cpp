@@ -52,7 +52,7 @@ double angular_resolution_;
 void callback(const sensor_msgs::PointCloud2::ConstPtr& pc)
 {
 
-  PointCloudT::Ptr cloud = boost::make_shared<PointCloudT>();
+  PointCloudT::Ptr cloud = pcl::make_shared<PointCloudT>();
   pcl::fromROSMsg(*pc, *cloud);
 
   size_t height = 8;   // 8 layers
@@ -60,7 +60,7 @@ void callback(const sensor_msgs::PointCloud2::ConstPtr& pc)
 
   PointT invalid;
   invalid.x = invalid.y = invalid.z = std::numeric_limits<float>::quiet_NaN();
-  PointCloudT::Ptr cloud_out = boost::make_shared<PointCloudT>(width, height, invalid);
+  PointCloudT::Ptr cloud_out = pcl::make_shared<PointCloudT>(width, height, invalid);
   cloud_out->is_dense = false;
 
   for (size_t i = 0; i < cloud->size(); i++)

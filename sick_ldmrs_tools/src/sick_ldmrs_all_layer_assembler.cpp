@@ -55,17 +55,17 @@ ros::Publisher pub_;
 
 std::string fixed_frame_;
 
-PointCloudT::Ptr cloud_lower_ = boost::make_shared<PointCloudT>();
+PointCloudT::Ptr cloud_lower_ = pcl::make_shared<PointCloudT>();
 
 void callback(const sensor_msgs::PointCloud2::ConstPtr& pc)
 {
-  PointCloudT::Ptr cloud = boost::make_shared<PointCloudT>();
+  PointCloudT::Ptr cloud = pcl::make_shared<PointCloudT>();
   pcl::fromROSMsg(*pc, *cloud);
 
   // ----- transform to fixed frame
   try
   {
-    PointCloudT::Ptr cloud_fixed = boost::make_shared<PointCloudT>();
+    PointCloudT::Ptr cloud_fixed = pcl::make_shared<PointCloudT>();
 
     if (!pcl_ros::transformPointCloud(fixed_frame_, *cloud, *cloud_fixed, *tf_))
     {
