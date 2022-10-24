@@ -128,7 +128,7 @@ int main(int argc, char **argv)
 
   sub.subscribe(nh, "cloud", 10);
   tf_filter = new tf::MessageFilter<sensor_msgs::PointCloud2>(sub, *tf_, fixed_frame_, 10);
-  tf_filter->registerCallback(boost::bind(callback, _1));
+  tf_filter->registerCallback(boost::bind(callback, boost::placeholders::_1));
 
   pub_ = nh.advertise<sensor_msgs::PointCloud2>("all_layers", 10);
 

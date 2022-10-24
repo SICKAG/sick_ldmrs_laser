@@ -67,7 +67,7 @@ SickLDMRS::SickLDMRS(Manager *manager, boost::shared_ptr<diagnostic_updater::Upd
   , initialized_(false)
 {
   dynamic_reconfigure::Server<SickLDMRSDriverConfig>::CallbackType f;
-  f = boost::bind(&SickLDMRS::update_config, this, _1, _2);
+  f = boost::bind(&SickLDMRS::update_config, this, boost::placeholders::_1, boost::placeholders::_2);
   dynamic_reconfigure_server_.setCallback(f);
 
   // point cloud publisher
