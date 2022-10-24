@@ -39,6 +39,7 @@
 #include <sensor_msgs/PointCloud2.h>
 #include <sick_ldmrs_msgs/sick_ldmrs_point_type.h>
 #include <pcl/point_cloud.h>
+#include <pcl/common/point_tests.h>
 
 typedef sick_ldmrs_msgs::SICK_LDMRS_Point PointT;
 typedef pcl::PointCloud<PointT> PointCloudT;

@@ -35,6 +35,7 @@
  */
 
 #include <iostream>
+#include <shared_mutex>
 
 #include <pcl_conversions/pcl_conversions.h>
 
